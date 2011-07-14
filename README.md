@@ -40,14 +40,11 @@ Visit http://127.0.0.1:8080 with your browser and follow the on-screen instructi
 
 ## Todo
 
-* XmlResponse for "post" needs a Sitemap. ("No navigation defined"-error)
-	http://groups.google.com/group/liftweb/browse_thread/thread/18d4334601bacf57
-
-* jQuery Dialog for adding new posts with auto-slugging ([a-zA-Z0-9/,-])
-	http://groups.google.com/group/liftweb/browse_thread/thread/d42aaa377f62f12f
-
+* XmlResponse for "post" needs a Sitemap. ("No navigation defined"-error) http://groups.google.com/group/liftweb/browse_thread/thread/18d4334601bacf57
+* jQuery Dialog for adding new posts with auto-slugging ([a-zA-Z0-9/,-]) http://groups.google.com/group/liftweb/browse_thread/thread/d42aaa377f62f12f
+* Blog.scala:68 Only show many-to-many posts according to User-status
+* jquery.tokeninput.js:641 Fix the dropdown to be selectable by keyboard
+* println.js:153 Save window-size in a Cookie, make wmd-textarea auto-resizable with jQueryUI dialog
 * Tagging -> return way to server
-
 * Twitter, Facebook and Google+ Integration
-
 * grep for FIXME or FIXIT ;)
