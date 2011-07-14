@@ -61,3 +61,7 @@ tm.out
 *.tm.epoch
 multiverse.log
 
+
+# remove for production releases
+# or major changes
+src/main/resources/props/*

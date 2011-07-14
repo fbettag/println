@@ -175,6 +175,8 @@ object Post extends Post with LongKeyedMetaMapper[Post] {
 		case _ => Post.findAll(By(Post.published, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Ascending))
 	}
 
+	def done(nameOrId: String): Box[Post] = { println("------------------\n%s\n------------------".format(nameOrId)); Empty }
+
 	def one(nameOrId: String) = User.currentUser match {
 		case Full(u: User) =>
 			Post.find(By(Post.slug, nameOrId)) match {

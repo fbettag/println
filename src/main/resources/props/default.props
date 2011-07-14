@@ -1,7 +1,7 @@
 db.driver=org.postgresql.Driver
-db.url=jdbc:postgresql://127.0.0.1/printlndemo
-db.user=printlndemo
+db.url=jdbc:postgresql://172.16.1.1/printlndemo
+db.user=postgres
 db.password=
 
-mo.host=127.0.0.1
+mo.host=172.16.1.1
 mo.port=27017

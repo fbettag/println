@@ -69,12 +69,8 @@ object XhtmlTemplateResponse extends HeaderDefaults {
 
 class Boot {
 	def boot {
-		val srvr = new ServerAddress(Props.get("mo.host") openOr "127.0.0.1", Props.get("mo.port").openOr("27017").toInt)
-		val mo = new MongoOptions
-		mo.socketTimeout = 10
-
-		MongoDB.defineDb(DefaultMongoIdentifier, new Mongo(srvr, mo), "printlndemo")
 		
+		val useMongoDB_? = false
 		
 		if (!DB.jndiJdbcConnAvailable_?) {
 			val vendor = new StandardDBVendor(
@@ -89,17 +85,27 @@ class Boot {
 
 		Schemifier.schemify(true, Schemifier.infoF _, User, Post, Tag, PostTags)
 
+		
+		if (useMongoDB_?) {
+			val srvr = new ServerAddress(Props.get("mo.host") openOr "127.0.0.1", Props.get("mo.port").openOr("27017").toInt)
+			val mo = new MongoOptions
+			mo.socketTimeout = 10
+			MongoDB.defineDb(DefaultMongoIdentifier, new Mongo(srvr, mo), "printlndemo")	
+		}
+
 		// where to search snippet
 		LiftRules.addToPackages("code")
 
 		val redirectUnlessUser = If(() => User.loggedIn_?, () => RedirectResponse("/"))
 		val redirectUnlessAdmin = If(() => User.isAdmin_?, () => RedirectResponse("/"))
+		val redirectUnlessMongo = If(() => useMongoDB_?, () => RedirectResponse("/"))
 
 		// Build SiteMap
 		def sitemap = SiteMap(
 			Menu.i("Posts") / "index",
-			Menu.i("Statistics") / "admin" / "stats" >> redirectUnlessUser,
-			Menu.i("Users") / "admin" / "users" >> redirectUnlessAdmin >> User.AddUserMenusAfter
+			Menu.i("Statistics") / "admin" / "stats" >> redirectUnlessUser >> redirectUnlessMongo,
+			Menu.i("Users") / "admin" / "users" >> redirectUnlessAdmin >> User.AddUserMenusAfter,
+			Menu.i("New Post") / "post" >> redirectUnlessAdmin >> Hidden	// So nobody can steal /post as a slug.
 		)
 
 		def sitemapMutators = User.sitemapMutator
@@ -143,6 +149,17 @@ class Boot {
 			S.render(<lift:embed what={what} />, S.request.get.request).first
 
 		lazy val notFoundResponse = NotFoundAsResponse(XhtmlTemplateResponse(<lift:embed what="404" />, 404))
+		
+		def slugFromRequest: String = S.request match {
+			case Full(req: Req) => { println("---------------------------\n%s\n-----------------".format(req.uri)); req.uri.replaceFirst("^/", "") }
+			case _ => "EMPTY"
+		}
+
+		SiteMap.addMenusAtEndMutator(List(Menu.i("postederrrrr") / "postederrrrr"))
+		// LiftRules.statelessRewrite.prepend(NamedPF("BlogRewrite") {
+		// 	case _ if (Post.done(slugFromRequest) != Empty) =>
+		// 		RewriteResponse(ParsePath("post" :: Nil, "html", true, false), Map("slug" -> slugFromRequest))
+		// })
 
 		LiftRules.passNotFoundToChain = false 
 		LiftRules.uriNotFound.prepend {
@@ -154,8 +171,8 @@ class Boot {
 					case _ if (req.uri.matches("/sitemap(\\.xml)?")) =>
 						NotFoundAsResponse(XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8"))
 
-					case _ if (Post.one(req.uri.replaceFirst("^/", "")) != Empty) =>
-						NotFoundAsResponse(XhtmlTemplateResponse(<lift:embed what="post" />, 200))
+					// case _ if (Post.one(req.uri.replaceFirst("^/", "")) != Empty) =>
+					// 	NotFoundAsResponse(XhtmlTemplateResponse(<lift:embed what="post" />, 200))
 
 					case _ => notFoundResponse
 				}
