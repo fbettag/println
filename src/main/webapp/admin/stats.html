@@ -1,0 +1,108 @@
+<div id="main" class="lift:surround?with=default;at=main">
+	
+	<h1>Statistics</h1>
+
+	<div id="visitors_graph_area" class="flot_graph_area"></div>
+	<span class="lift:Stats.graph"></span>
+
+	<h2>Pageviews</h2>
+	
+	<span class="lift:Stats.list">
+		<table>
+			<thead>
+				<tr>
+					<th></th>
+					<th>Now</th>
+					<th>Today</th>
+					<th>Yesterday</th>
+					<th>this Week</th>
+					<th>Total</th>
+				</tr>
+				<tr>
+					<th>Visitors</th>
+					<th id="current_visitors"></th>
+					<th id="visitors_today"></th>
+					<th id="visitors_yesterday"></th>
+					<th id="visitors_week"></th>
+					<th id="visitors_total"></th>
+				</tr>
+				<tr>
+					<th>Views</th>
+					<th id="current_rpm"></th>
+					<th id="views_today"></th>
+					<th id="views_yesterday"></th>
+					<th id="views_week"></th>
+					<th id="views_total"></th>
+				</tr>
+			</thead>
+		</table>
+
+	</span>
+	
+	<br style="clear:both"/>
+
+
+	<h2>Top 10 URLs in the past month</h2>
+	
+	<span class="lift:Stats.webviews?length=10;hours=732">
+		<table>
+			<thead>
+				<tr>
+					<th>URL</th>
+					<th>Views</th>
+					<th>Last visit</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="webview_row">
+					<th class="webview_url"></th>
+					<th class="webview_views"></th>
+					<th class="webview_lastView"></th>
+				</tr>
+			</tbody>
+		</table>
+	</span>
+
+	<h2>Top 20 Referer in the past month</h2>
+	
+	<span class="lift:Stats.referers?length=10;hours=732">
+		<table>
+			<thead>
+				<tr>
+					<th>Referer</th>
+					<th>Refered</th>
+					<th>Last visitor</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="referer_row">
+					<th class="referer_name"></th>
+					<th class="referer_refers"></th>
+					<th class="referer_lastRefered"></th>
+				</tr>
+			</tbody>
+		</table>
+	</span>
+
+	<h2>Top 10 Browser in the past 3 months</h2>
+	
+	<span class="lift:Stats.browsers?length=10;months=3">
+		<table>
+			<thead>
+				<tr>
+					<th>Browser</th>
+					<th>Visits</th>
+					<th>Last visit</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="browser_row">
+					<th class="browser_name"></th>
+					<th class="browser_views"></th>
+					<th class="browser_lastVisit"></th>
+				</tr>
+			</tbody>
+		</table>
+	</span>
+
+</div>

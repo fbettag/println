@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:lift="http://liftweb.net/">
+<head>
+	<meta charset="utf-8">
+	<title>println blogging software</title>
+
+	<!--[if ! lte IE 6]>-->
+	<link href="/css/master.css" media="screen" rel="stylesheet">
+	<!--><![endif]-->
+
+	<!--[if lte IE 6]>
+		<link href="http://universal-ie6-css.googlecode.com/files/ie6.1.1.css" media="screen, projection" rel="stylesheet">
+	<![endif]-->
+
+	<!--[if lt IE 9]>
+		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<script type="text/javascript" id="jquery" src="/js/jquery.js"></script>
+	<script type="text/javascript" id="json" src="/classpath/json.js"></script>
+	
+	<span class="lift:Users.isAdmin">
+		<script type="text/javascript" src="/js/jquery-ui.js"></script>
+		<script type="text/javascript" src="/js/jquery.tokeninput.js"></script>
+		<script type="text/javascript" src="/js/wmd/jquery.wmd.js"></script>
+		<script type="text/javascript" src="/js/println.js"></script>
+		<link rel="stylesheet" type="text/css" href="/css/wmd/wmd.css" />
+		<link rel="stylesheet" type="text/css" href="/css/jquery-ui/println/jquery-ui.css" />
+	    <link rel="stylesheet" type="text/css" href="/css/token-input.css" />
+	    <link rel="stylesheet" type="text/css" href="/css/token-input-facebook.css" />
+		<link rel="stylesheet" type="text/css" href="/css/println.css" media="screen" />
+	</span>
+
+	<link href="/atom.xml" rel="alternate" type="application/atom+xml">
+</head>
+<body>
+	<div id="container">
+		<a href="http://twitter.com/fbettag" id="follow-me">
+			<img alt="Follow me on Twitter!" src="/images/follow-me.png">
+		</a>
+
+		<header role="banner">
+			<hgroup>
+				<a href="/">
+					<h1>println</h1>
+					<h2>blogging software</h2>
+				</a>
+			</hgroup>
+		</header>
+
+		<div id="content">
+			<div class="lift:Msgs?showAll=true errors"></div>
+			<article role="main" id="main"></article>
+
+			<!-- either here or in post.html (or both) -->
+			<!--
+ 			<div class="lift:embed?what=social"></div>
+			<div class="lift:Helpers.disqus?name=my.new.blog"></div>
+			-->
+		</div>
+
+		<div id="sidebar">
+			<span class="lift:Users.isAdmin">
+				<h3>Admin Menu</h3>
+				<ul class="lift:Menu.builder"></ul>
+			</span>
+
+			<h3>Links</h3>
+			<ul class="menu">
+				<li><a href="http://println.io" target="_blank">println Project</a></li>
+				<li><a href="http://github.com/fbettag/println" target="_blank">println GitHub Page</a></li>
+				<li><a href="http://uberblo.gs" target="_blank"><strong>the</strong> uberblog</a></li>
+				<li><a href="http://www.bett.ag" target="_blank">Bettag Systems</a></li>
+				<li><a href="http://www.liftweb.net" target="_blank">Lift Web Framework</a></li>
+				<li><a href="http://www.mongodb.org" target="_blank">MongoDB</a></li>
+				<li><a href="http://www.postgresql.org" target="_blank">PostgreSQL</a></li>
+			</ul>
+
+			<h3>Statistics</h3>
+			<span class="lift:Stats.list">
+				Visitors today: <span id="visitors_today"></span><br/>
+				Visitors total: <span id="visitors_total"></span><br/>
+			</span>
+
+			<span class="lift:Helpers.twitter?user=fbettag"></span>
+		</div>
+
+		<footer class="branding">
+			<p>
+				&copy; <span class="lift:Helpers.years?since=2010"><span id="copyright_years"></span></span> Franz Bettag  --
+				Powered by <a href="http://println.io">println blogging software</a>
+			</p>
+		</footer>
+	
+		<span class="lift:Users.isNotLoggedIn">
+			<span class="lift:Helpers.bitpit?id=7019"></span>
+			<span class="lift:Helpers.analytics?ua="></span>
+			<span class="lift:Stats.track"></span>
+		</span>
+		
+	</div>
+</body>
+</html>

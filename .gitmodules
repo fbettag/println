@@ -1,3 +1,0 @@
-[submodule "src/main/webapp/js/wmd"]
-	path = src/main/webapp/js/wmd
-	url = https://github.com/klipstein/wmd.git

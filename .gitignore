@@ -1,0 +1,63 @@
+# swap files
+*~
+*#
+*.sw[op]
+._*
+
+# sbt
+project/boot
+project/target
+project/plugins/target
+project/plugins/project
+
+# OSX
+.DS_Store
+
+
+# Intellij IDEA
+*.iws
+*.ipr
+*.iml
+
+
+# Eclipse & Netbeans
+.project
+.settings
+.classpath
+.idea*
+.scala_dependencies
+
+
+# ensime
+ensime_port
+.ensime.*
+
+
+# stolen from akka's .gitignore ;)
+activemq-data
+etags
+tags
+TAGS
+akka.tmproj
+reports
+dist
+build
+target
+deploy/*.jar
+data
+out
+logs
+.#*
+.codefellow
+storage
+.codefellow
+_dump
+.manager
+manifest.mf
+semantic.cache
+tm*.log
+tm*.lck
+tm.out
+*.tm.epoch
+multiverse.log
+

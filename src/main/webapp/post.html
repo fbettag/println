@@ -1,0 +1,92 @@
+<article id="main" role="main" class="lift:surround?with=default;at=main">
+
+	<span class="println_entry_content">
+
+		<!-- admin -->
+		<span class="lift:Users.isAdmin">
+			<div id="println-admin" style="display:none">
+				<ul>
+					<li><a href="#println-admin-meta">Meta</a></li>
+					<li><a href="#println-admin-content">Content</a></li>
+					<li><a href="#println-admin-teaser">Teaser</a></li>
+					<li><a href="#println-admin-tags">Tags</a></li>
+					<li><a href="#println-admin-publish">Publish</a></li>
+				</ul>
+
+				<span class="lift:Posts.form">
+
+					<div id="println-admin-meta">
+						<form>
+							<fieldset>
+								<label>Name of this Post</label>
+								<input class="println_post_name"/>
+								<label>Shortname or Slug</label>
+								<input class="println_post_slug"/>
+								<label>Teaser Link</label>
+								<input class="println_post_teaser_link" value="Read more"/>
+							</fieldset>
+						</form>
+					</div>
+
+					<div id="println-admin-content">
+						<textarea id="println-admin-txtc" style="resize:none"></textarea>
+						<textarea id="println-admin-txtc-cached" style="display:none"></textarea>
+					</div>
+
+					<div id="println-admin-teaser">
+						<textarea id="println-admin-txtt" style="resize:none"></textarea>
+						<textarea id="println-admin-txtt-cached" style="display:none"></textarea>
+					</div>
+					
+					
+					<div id="println-admin-tags">
+						<form>
+							<fieldset>
+								<label>Tags and Keywords</label>
+								<input class="println_post_tags"/>
+							</fieldset>
+						</form>
+					</div>
+					
+					
+					<div id="println-admin-publish">
+						<form>
+							<fieldset>
+								<label>Publish now</label>
+								<input type="checkbox" class="println_post_publish_now"/>
+								<label>but not before</label>
+								<input class="println_post_publish_date"/>
+								<label>Twitter Announcement</label>
+								<input class="println_post_publish_twitter" disabled="disabled" type="text" value="coming soon."/>
+								<label>Facebook Announcement</label>
+								<input class="println_post_publish_facebook" disabled="disabled" type="text" value="coming soon."/>
+								<label>Google+ Announcement</label>
+								<input class="println_post_publish_google" disabled="disabled" type="text" value="coming soon."/>
+							</fieldset>
+						</form>
+					</div>
+				</span>		
+			</div>
+
+			<a href="javascript:println.window.toggle('#println-admin');">Edit this Post</a>
+			or <a href="#" class="println_entry_delete">delete this Post</a>
+			
+		</span>
+		<!-- admin end -->
+		
+		<h1><a class="println_entry_link" href="#">My new Blogpost</a></h1>
+		<span id="println_entry_body"></span>
+		<footer>
+			<span class="println_post_footer">
+				Published on <time datetime="2011-07-04T00:00:00+00:00" pubdate>07 July 2011</time>
+			</span>
+		</footer>
+
+	</span>
+	<!-- either here or in templates-hidden/default.html (or both) -->
+	<!--
+	<div class="lift:embed?what=social"></div>
+	<div class="lift:Helpers.disqus?name=my.new.blog"></div>
+	-->
+
+</article>
