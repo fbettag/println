@@ -18,22 +18,22 @@ In order to get, compile and run the project locally, you need:
 
 After installing PostgreSQL, run the following in your shell:
 
-<code>
-createuser -Upostgres printlndemo
-createdb -Upostgres --owner println printlndemo
-</code>
+```shell
+$ createuser -Upostgres printlndemo<br/>
+$ createdb -Upostgres --owner println printlndemo
+```
 
 
-If everything is up and running
+If everything is up and running:
 
-<code>
-git clone git://github.com/fbettag/println.git
-cd println
-./sbt update
-./sbt ~jetty-run
-</code>
+```shell
+$ git clone git://github.com/fbettag/println.git
+$ cd println
+$ ./sbt update
+$ ./sbt ~jetty-run
+```
 
-Visit http://127.0.0.1:8080 with your browser.
+Visit http://127.0.0.1:8080 with your browser and follow the on-screen instructions.
 
 
 ## Todo
