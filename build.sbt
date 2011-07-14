@@ -1,4 +1,4 @@
-name := "telegraph"
+name := "println"
 
 version := "0.1"
 

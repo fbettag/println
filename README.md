@@ -2,8 +2,10 @@
 
 [println](http://println.io) is a blogging / publishing software written in [Scala](http://www.scala-lang.org) with the [Lift Web Framework](http://www.liftweb.net). It tries to fulfill the need for an un-obustrive approach of writing, publishing and managing ones blog posts with it's overlay-editor-window.
 
+It is heavily inspired by [Nesta CMS](http://nestacms.com/) a Ruby based CMS Software.
 
-The official website is currently being done with println itself, please be patient as it well well-done. :)
+
+The official website is currently being done with println itself, please be patient as it well well-done. There will also be a webcast soon.
 
 
 ## How to get started
@@ -19,7 +21,7 @@ In order to get, compile and run the project locally, you need:
 After installing PostgreSQL, run the following in your shell:
 
 ```shell
-$ createuser -Upostgres printlndemo<br/>
+$ createuser -Upostgres printlndemo
 $ createdb -Upostgres --owner println printlndemo
 ```
 
