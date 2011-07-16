@@ -29,10 +29,10 @@ Currently it is text-only. I will implement media-management as soon as possible
 
 The main layout is in src/main/webapp/template-hidden/default.html and has all the widgets that are currently implemented. Here is the overview:
 
-* BitPit: <span class="lift:Helpers.bitpit?id=7019"/>
-* Twitter: <span class="lift:Helpers.twitter?user=fbettag"/>
-* Google Analytics: <span class="lift:Helpers.analytics?ua="/>
-* Copyright Helper: &copy; <span class="lift:Helpers.years?since=2010"><span id="copyright_years"></span></span>
+* BitPit: ```<span class="lift:Helpers.bitpit?id=7019"/>```
+* Twitter: ```<span class="lift:Helpers.twitter?user=fbettag"/>```
+* Google Analytics: ```<span class="lift:Helpers.analytics?ua="/>```
+* Copyright Helper: ```&copy; <span class="lift:Helpers.years?since=2010"><span id="copyright_years"></span></span>```
 
 If you want to implement your own, feel free to look at src/main/scala/code/snippets/Helpers.scala for how to do so.
 
@@ -89,16 +89,13 @@ If you want to try this project without MongoDB, feel free to do so. Just make s
 
 Simply place the following in one or both of the files (not in any of the repeated sections of course):
 
-<code>
-<lift:Stats.track/>
-</code>
+```<lift:Stats.track/>```
 
 
 ## Todo
 
 * Blog.scala:68 Only show many-to-many posts according to User-status
 * jquery.tokeninput.js:641 Fix the dropdown to be selectable by keyboard
-* github gist integration
 * Tagging -> return way to server
 * Tag-Cloud
 * Media Management -> Image-Upload, etc.
