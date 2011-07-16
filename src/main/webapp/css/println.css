@@ -13,3 +13,7 @@ fieldset {
 	border:0;
 	margin-top:25px;
 }
+
+.invalid {
+	background: #ff8e91;
+}

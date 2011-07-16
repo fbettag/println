@@ -65,7 +65,7 @@ class Tag extends LongKeyedMapper[Tag] with IdPK with ManyToMany {
 	// 	case _ => List(By(Post.published, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Ascending))
 	// }
 
-	object posts extends MappedManyToMany(PostTags, PostTags.tag, PostTags.post, Post) // FIXME only show published posts (postsMMTMopts)
+	object posts extends MappedManyToMany(PostTags, PostTags.tag, PostTags.post, Post)
 	
 }
 
@@ -85,9 +85,17 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 	    override def defaultValue = "New Blog Post"
 	}
 
-	object slug extends MappedStringIndex(this, 128) with LifecycleCallbacks {
-		override def writePermission_? = true
-		override def beforeSave() {super.beforeSave; this.set(this.replaceAll("[^a-zA-Z0-9,/-]+", "-").replaceAll("-+", "-"))}
+	object slug extends MappedString(this, 128) {
+		override def dbIndexed_? = true
+		override def dbNotNull_? = true
+		override def validations = valUnique("Slug must be unique!") _ :: checkForPreoccupiedSlugs _ :: super.validations
+
+		def checkForPreoccupiedSlugs(s: String) = {
+			println("---------------------------------\n %s \n------------------------------------".format(s))
+			if (s.matches("^(post/?|stats/?|users(/.*)?)$"))
+				List(FieldError(this, "You cannot use a pre-defined slug."))
+			else List[FieldError]()		
+		}
 	}
 
 	object format extends MappedString(this, 20) {
@@ -174,8 +182,6 @@ object Post extends Post with LongKeyedMetaMapper[Post] {
 		case Full(u: User) => Post.findAll(OrderBy(Post.publishDate, Ascending))
 		case _ => Post.findAll(By(Post.published, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Ascending))
 	}
-
-	def done(nameOrId: String): Box[Post] = { println("------------------\n%s\n------------------".format(nameOrId)); Empty }
 
 	def one(nameOrId: String) = User.currentUser match {
 		case Full(u: User) =>

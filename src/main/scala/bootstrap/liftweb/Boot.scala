@@ -48,22 +48,22 @@ import scala.collection.immutable.TreeMap
 import code.model._
 
 
-
 object XhtmlTemplateResponse extends HeaderDefaults {
-	
-	def apply(nodeToRender: NodeSeq, statusCode: Int): LiftResponse = {
-		val renderedNode = {
-			val forceToRoot: LiftRules.RewritePF = { case _ => RewriteResponse(Req.parsePath("/"), TreeMap.empty, true) }
-			for (req <- S.request; session <- S.session) yield
-			S.init(Req(req, forceToRoot::Nil), session) {
-				session.processSurroundAndInclude("/", nodeToRender)
-			}
-		} openOr {
-			error("No session")
+	def apply(path: ParsePath, statusCode: Int): LiftResponse = {
+		(for {
+			session <- S.session
+			template =  Templates(path.partPath)
+			resp <- session.processTemplate(template, S.request.open_!, path, statusCode)
+		} yield resp) match {
+			case Full(resp) => resp
+			case _ => XhtmlNotFoundResponse()
 		}
-		new XhtmlResponse(Group(renderedNode), Empty, headers, cookies, statusCode, false)
-
 	}
+}
+
+
+object XhtmlNotFoundResponse extends HeaderDefaults {
+	def apply() = XhtmlTemplateResponse(ParsePath("404" :: Nil, "html", false, false), 404)
 }
 
 
@@ -102,10 +102,10 @@ class Boot {
 
 		// Build SiteMap
 		def sitemap = SiteMap(
+			Menu.i("New Post") / "post" >> redirectUnlessAdmin,
 			Menu.i("Posts") / "index",
 			Menu.i("Statistics") / "admin" / "stats" >> redirectUnlessUser >> redirectUnlessMongo,
-			Menu.i("Users") / "admin" / "users" >> redirectUnlessAdmin >> User.AddUserMenusAfter,
-			Menu.i("New Post") / "post" >> redirectUnlessAdmin >> Hidden	// So nobody can steal /post as a slug.
+			Menu.i("Users") / "admin" / "users" >> redirectUnlessAdmin >> User.AddUserMenusAfter
 		)
 
 		def sitemapMutators = User.sitemapMutator
@@ -148,19 +148,6 @@ class Boot {
 		def renderTemplate(what: String) =
 			S.render(<lift:embed what={what} />, S.request.get.request).first
 
-		lazy val notFoundResponse = NotFoundAsResponse(XhtmlTemplateResponse(<lift:embed what="404" />, 404))
-		
-		def slugFromRequest: String = S.request match {
-			case Full(req: Req) => { println("---------------------------\n%s\n-----------------".format(req.uri)); req.uri.replaceFirst("^/", "") }
-			case _ => "EMPTY"
-		}
-
-		SiteMap.addMenusAtEndMutator(List(Menu.i("postederrrrr") / "postederrrrr"))
-		// LiftRules.statelessRewrite.prepend(NamedPF("BlogRewrite") {
-		// 	case _ if (Post.done(slugFromRequest) != Empty) =>
-		// 		RewriteResponse(ParsePath("post" :: Nil, "html", true, false), Map("slug" -> slugFromRequest))
-		// })
-
 		LiftRules.passNotFoundToChain = false 
 		LiftRules.uriNotFound.prepend {
 			case _ => S.request match {
@@ -171,28 +158,15 @@ class Boot {
 					case _ if (req.uri.matches("/sitemap(\\.xml)?")) =>
 						NotFoundAsResponse(XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8"))
 
-					// case _ if (Post.one(req.uri.replaceFirst("^/", "")) != Empty) =>
-					// 	NotFoundAsResponse(XhtmlTemplateResponse(<lift:embed what="post" />, 200))
+					case _ if (Post.one(req.uri.replaceFirst("^/", "")) != Empty) =>
+						NotFoundAsResponse(XhtmlTemplateResponse(ParsePath("post" :: Nil, "html", false, false), 200))
 
-					case _ => notFoundResponse
+					case _ => NotFoundAsResponse(XhtmlNotFoundResponse())
 				}
-				case _ => notFoundResponse
+				case _ => NotFoundAsResponse(XhtmlNotFoundResponse())
 			}
 		}
 
-		// LiftRules.uriNotFound.prepend(NamedPF("404Handler") {
-		// 	case (req, failure) if (req.uri.matches("/atom(\\.xml)?")) =>
-		// 		NotFoundAsResponse(AtomResponse(renderTemplate("atom")))
-		// 
-		// 	case (req, failure) if (req.uri.matches("/sitemap(\\.xml)?")) =>
-		// 		NotFoundAsResponse(XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8"))
-		// 
-		// 	case (req, failure) if (Post.one(req.uri.replaceFirst("^/", "")) != Empty) =>
-		// 		NotFoundAsResponse(XhtmlTemplateResponse(<lift:embed what="post" />, 200))
-		// 
-		// 	case _ =>
-		// 		NotFoundAsResponse(XhtmlTemplateResponse(<lift:embed what="404" />, 404))
-		// })
 	}
 }
 

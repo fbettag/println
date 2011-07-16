@@ -30,6 +30,19 @@
 println = {};
 
 /**
+ * State
+ */
+println.state = {};
+println.state.cookie = { expires: 3650, path: '/' };
+
+
+/**
+ * Tags
+ */
+println.tags = {};
+println.tags.add = function(item) {}
+
+/**
  * Upload
  */
 println.upload = {};
@@ -124,10 +137,65 @@ println.upload.progress = function(uuid, cb) {
  */
 println.window = {};
 
-println.window.toggle = function(jq) {
-	var $d = $(jq);
-	$d.dialog($d.dialog("isOpen") ? "close" : "open");
+println.window.toggle = function() {
+	var d = println.state.cms;
+	d.dialog(d.dialog("isOpen") ? "close" : "open");
 	$('#println_post_name').focus();
+};
+
+
+// Saves window-values too cokie and resizes textareas.
+println.window.resize = function() {
+	var pos = println.state.cms.dialog('option', 'position');
+
+	if (pos && typeof pos[0] !== 'undefined' && typeof pos[1] !== 'undefined') {
+	$.cookie('println-x', pos[0], println.state.cookie);
+	$.cookie('println-y', pos[1], println.state.cookie);
+	} else {
+	$.cookie('println-x', null);
+	$.cookie('println-y', null);
+	}
+
+	$.cookie('println-s', println.state.cms.dialog("isOpen"));
+	$.cookie('println-w', $(this).outerWidth(), println.state.cookie);
+	$.cookie('println-h', $(this).outerHeight(), println.state.cookie);
+
+	var height = $(this).innerHeight();
+	var width = $(this).innerWidth();
+
+	$('#println-admin-txtc, #println-admin-txtt').css('height', height - 150); // auto-width with css! ;)
+};
+
+println.window.restore = function() {
+	var x = $.cookie('println-x');
+	var y = $.cookie('println-y');
+	var w = $.cookie('println-w');
+	var h = $.cookie('println-h');
+	var s = $.cookie('println-s');
+
+	if (typeof x !== 'undefined' && typeof y !== 'undefined') {
+		x = parseInt(x, 10);
+		y = parseInt(y, 10);
+		if (!isNaN(x) && !isNaN(y)) {
+			println.state.cms.dialog('option', 'position', [x, y]);
+		}
+	}
+
+	if (typeof w !== 'undefined' && typeof h !== 'undefined') {
+		w = parseInt(w, 10);
+		h = parseInt(h, 10);
+		if (!isNaN(w) && !isNaN(h) && w >= println.state.cms.dialog('option', 'minWidth') && h >= println.state.cms.dialog('option', 'minHeight')) {
+			println.state.cms.dialog('option', 'width', w);
+			println.state.cms.dialog('option', 'height', h);
+		}
+	}
+
+	// Open if requested
+	if (typeof s !== 'undefined' && s || /#open/i.test(location.hash)) {
+		println.state.cms.each(function(i, e) {
+			println.state.cms.dialog('open');
+		});
+	}
 };
 
 
@@ -135,7 +203,10 @@ println.window.toggle = function(jq) {
  * Startup
  */
 $(document).ready(function() {
-	$("#println-admin").each(function(i, e) {
+
+	println.state.cms = $("#println-admin");
+
+	println.state.cms.each(function(i, e) {
 		$(e).tabs().dialog({
 			collapsible: true,
 			height: $(window).height() / 2.5,
@@ -143,16 +214,11 @@ $(document).ready(function() {
 			height: 490,
 			sticky: true,
 			autoOpen: false,
-			resizable: false,
-			title: "println blogging software"
-			// dragStop: wws.cms.resize,
-			// open: wws.cms.resize,
-			// resize: wws.cms.resize
+			title: "println blogging software",
+			dragStop: println.window.resize,
+			open: println.window.resize,
+			resize: println.window.resize
 		});
-
-		// FIXME save window size in cookie
-		// FIXME make wmd-textarea auto-height 100% of the window
-		// FIXME remove resizable: false from above
 		
 		// WMD Setup
 		$("#println-admin-txtt").wmd({
@@ -186,20 +252,18 @@ $(document).ready(function() {
 			{id: 43, name: "C++"},
 			{id: 47, name: "Java"}
 		], {
-			preventDuplicates: true
+			preventDuplicates: true,
+			theme: 'facebook',
+			// onAdd: println.tags.add,
+			// onDelete: println.tags.delete,
+			// prePopulate: println.tags.selected
 		});
 	});
 	
 	
 	$("#println-admin form input[type=text], ul.token-input-list").each(function(i, e) {
-		// if ($(e).hasClass('println_post_tags')) return;
 		$(e).addClass('text ui-widget-content ui-corner-all');
 	});
-
-	// Open if requested
-	if (/#open/i.test(location.hash)) {
-		$("#println-admin").each(function(i, e) {
-			println.window.toggle($(e));
-		});
-	}
+	
+	println.window.restore();
 });

@@ -21,6 +21,7 @@
 	
 	<span class="lift:Users.isAdmin">
 		<script type="text/javascript" src="/js/jquery-ui.js"></script>
+		<script type="text/javascript" src="/js/jquery.cookie.js"></script>
 		<script type="text/javascript" src="/js/jquery.tokeninput.js"></script>
 		<script type="text/javascript" src="/js/wmd/jquery.wmd.js"></script>
 		<script type="text/javascript" src="/js/println.js"></script>
@@ -60,9 +61,17 @@
 		</div>
 
 		<div id="sidebar">
+			<a href="/">Home</a>
+
 			<span class="lift:Users.isAdmin">
 				<h3>Admin Menu</h3>
-				<ul class="lift:Menu.builder"></ul>
+				<ul class="menu">
+					<li><a href="/post">New Post</a></li>
+					<li><a href="/admin/users">Users</a></li>
+					<li><a href="/users/logout">Logout</a></li>
+					<li><a href="/users/edit">Edit User</a></li>
+					<li><a href="/users/change_password">Change Password</a></li>
+				</ul> 
 			</span>
 
 			<h3>Links</h3>

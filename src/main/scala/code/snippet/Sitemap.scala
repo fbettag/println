@@ -66,7 +66,7 @@ class Sitemap extends Loggable {
 		"lastmod *" #>			Post.lastmod.toString("yyyy-MM-dd'T'HH:mm:ss.SSSZZ") // manual to avoid errors!
 
 	def list: CssSel =
-		"url *" #> Post.all.map(p =>
+		"url *" #> (Post.create.name("Home").slug("") :: Post.all).map(p =>
 			"loc *" #>			"http://%s/%s".format(S.hostName, p.slug) &
 			"lastmod *" #>		p.publishDate.toISOString)
 
@@ -83,7 +83,7 @@ class Sitemap extends Loggable {
 			"published *" #>		p.publishDate.toISOString &
 			"updated *" #>			p.updatedAt.toISOString &
 			"id *" #>				"tag:%s,%s:/".format(S.hostName, p.publishDate.toString("yyyy-MM-dd"), p.slug) &
-			"content *" #> {
+			"summary *" #> {
 				try {
 					val tcns = HtmlHelpers.filter(p.teaserCache.is)
 					XML.loadString("<span>" + tcns + "</span>")

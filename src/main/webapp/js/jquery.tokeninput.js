@@ -174,7 +174,7 @@ $.TokenList = function (input, url_or_data, settings) {
             $(this).val("");
         })
         .bind("keyup keydown blur update", resize_input)
-        .keyup(function (event) {
+        .keydown(function (event) {
             var previous_token;
             var next_token;
 
@@ -205,9 +205,9 @@ $.TokenList = function (input, url_or_data, settings) {
                         var dropdown_item = null;
 
                         if(event.keyCode === KEY.DOWN || event.keyCode === KEY.RIGHT) {
-                           dropdown_item = $(selected_dropdown_item).next();
+                            dropdown_item = $(selected_dropdown_item).next();
                         } else {
-                           dropdown_item = $(selected_dropdown_item).prev();
+                            dropdown_item = $(selected_dropdown_item).prev();
                         }
 
                         if(dropdown_item.length) {
@@ -239,15 +239,20 @@ $.TokenList = function (input, url_or_data, settings) {
                 case KEY.TAB:
                 case KEY.ENTER:
                 case KEY.NUMPAD_ENTER:
-                case KEY.COMMA:
                   if(selected_dropdown_item) {
                     add_token($(selected_dropdown_item).data("tokeninput"));
                   } else {
 					var value = $(this).val().replace(/,$/, '');
-	                add_token({id: 'new-'+value, name: value});
+				    add_token({id: 'new-'+value, name: value});
+                    return false;
 				  }
-				  return false;
                   break;
+
+				case KEY.COMMA:
+				  var value = $(this).val().replace(/,$/, '');
+				  add_token({id: 'new-'+value, name: value});
+				  return false;
+				  break;
 
                 case KEY.ESCAPE:
                   hide_dropdown();
@@ -473,8 +478,10 @@ $.TokenList = function (input, url_or_data, settings) {
         }
 
         // Insert the new tokens
-        insert_token(item);
-        checkTokenLimit();
+        if(settings.tokenLimit == null || token_count < settings.tokenLimit) {
+            insert_token(item);
+            checkTokenLimit();
+        }
 
         // Clear input box
         input_box.val("");
@@ -638,7 +645,7 @@ $.TokenList = function (input, url_or_data, settings) {
                 }
 
                 if(index === 0) {
-                    //select_dropdown_item(this_li); FIXME cannot select any records by keyboard anymore
+                    select_dropdown_item(this_li);
                 }
 
                 $.data(this_li.get(0), "tokeninput", value);

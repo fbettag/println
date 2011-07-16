@@ -11,10 +11,33 @@ The official website is currently being done with println itself, please be pati
 
 * High Performance (thanks to Lift and Scala)
 * Easy to use (thanks to me)
+* Easy to write (Live-Preview of your Markdown or Plaintext)
 * Easy to customize (by default only layout or css changes are needed)
 * Easy to deploy (.war Archive)
-* Internal web-tracking with MongoDB
-* Lots of widgets by default
+* Internal web-tracking with MongoDB (optional)
+* Lots of widgets by default (see next section)
+* Atom-Feed (/atom.xml)
+* Google Sitemap (/sitemap.xml)
+
+
+## Caveats
+
+Currently it is text-only. I will implement media-management as soon as possible. For now i suggest storing your images elsewhere (Flickr, Picasa) as they offer better upload-possibilities from mobile devices anyway.
+
+
+## Layout and Widgets
+
+The main layout is in src/main/webapp/template-hidden/default.html and has all the widgets that are currently implemented. Here is the overview:
+
+* BitPit: <span class="lift:Helpers.bitpit?id=7019"/>
+* Twitter: <span class="lift:Helpers.twitter?user=fbettag"/>
+* Google Analytics: <span class="lift:Helpers.analytics?ua="/>
+* Copyright Helper: &copy; <span class="lift:Helpers.years?since=2010"><span id="copyright_years"></span></span>
+
+If you want to implement your own, feel free to look at src/main/scala/code/snippets/Helpers.scala for how to do so.
+
+
+## Made with love
 
 It is made with the following pieces of software:
 
@@ -71,26 +94,14 @@ Simply place the following in one or both of the files (not in any of the repeat
 </code>
 
 
-## Layout and Widgets
-
-The main layout is in src/main/webapp/template-hidden/default.html and has all the widgets that are currently implemented. Here is the overview:
-
-* BitPit: <span class="lift:Helpers.bitpit?id=7019"/>
-* Twitter: <span class="lift:Helpers.twitter?user=fbettag"/>
-* Google Analytics: <span class="lift:Helpers.analytics?ua="/>
-* Copyright Helper: &copy; <span class="lift:Helpers.years?since=2010"><span id="copyright_years"></span></span>
-
-If you want to implement your own, feel free to look at src/main/scala/code/snippets/Helpers.scala for how to do so.
-
-
 ## Todo
 
-* XmlResponse for "post" needs a Sitemap. ("No navigation defined"-error and no JavaScript/liftAjax) http://groups.google.com/group/liftweb/browse_thread/thread/18d4334601bacf57
-* jQuery Dialog for adding new posts with auto-slugging ([a-zA-Z0-9/,-]) http://groups.google.com/group/liftweb/browse_thread/thread/d42aaa377f62f12f
 * Blog.scala:68 Only show many-to-many posts according to User-status
 * jquery.tokeninput.js:641 Fix the dropdown to be selectable by keyboard
-* println.js:153 Save window-size in a Cookie, make wmd-textarea auto-resizable with jQueryUI dialog
+* github gist integration
 * Tagging -> return way to server
+* Tag-Cloud
+* Media Management -> Image-Upload, etc.
 * Twitter, Facebook and Google+ Auto-Publish
 
 
