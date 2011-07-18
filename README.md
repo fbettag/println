@@ -94,7 +94,6 @@ Simply place the following in one or both of the files (not in any of the repeat
 
 ## Todo
 
-* Blog.scala:68 Only show many-to-many posts according to User-status
 * jquery.tokeninput.js:641 Fix the dropdown to be selectable by keyboard
 * Tagging -> return way to server
 * Tag-Cloud

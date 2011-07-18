@@ -60,12 +60,10 @@ class Tag extends LongKeyedMapper[Tag] with IdPK with ManyToMany {
 	
 	object priority extends MappedInt(this)
 
-	// private val postsMMTMopts =  User.currentUser match {
-	// 	case Full(u: User) => List(OrderBy(Post.publishDate, Ascending))
-	// 	case _ => List(By(Post.published, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Ascending))
-	// }
-
 	object posts extends MappedManyToMany(PostTags, PostTags.tag, PostTags.post, Post)
+	
+	def userPosts = posts.all.sort((e1, e2) => (e1.publishDate.is compareTo e2.publishDate.is) > 0)
+	def publicPosts = userPosts.filter(p => ! (p.published && (p.publishDate compareTo new Date) > 0))
 	
 }
 
@@ -91,7 +89,6 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 		override def validations = valUnique("Slug must be unique!") _ :: checkForPreoccupiedSlugs _ :: super.validations
 
 		def checkForPreoccupiedSlugs(s: String) = {
-			println("---------------------------------\n %s \n------------------------------------".format(s))
 			if (s.matches("^(post/?|stats/?|users(/.*)?)$"))
 				List(FieldError(this, "You cannot use a pre-defined slug."))
 			else List[FieldError]()		
