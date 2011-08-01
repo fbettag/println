@@ -64,7 +64,7 @@ import code.model._
 
 class Tags extends Loggable {
   
-	val tag = Tag.find(By(Tag.slug, S.uri.replaceFirst("^/tag/", ""))).open_!
+	lazy val tag = Tag.find(By(Tag.slug, S.uri.replaceFirst("^/tag/", ""))).open_!
 
 	/* snippets */
 	def name = Text(tag.name)
@@ -80,5 +80,29 @@ class Tags extends Loggable {
 			".println_post_footer *" #>					DateTimeHelpers.postFooter(p) &
 			".println_post_footer [id]" #>				"println_entry_footer_%s".format(p.id) &
 			".println_entry_teaser *" #>				p.teaserText)
+
+	def cloud = {
+		val tags = DB.runQuery("""
+			SELECT COUNT(pt.tag) AS count, t.name AS tag, t.slug AS slug
+			FROM post_tags AS pt LEFT JOIN tags AS t
+			ON (t.id = pt.tag)
+			GROUP BY t.name, t.slug ORDER BY count, t.name
+		""")
+		val min = DB.runQuery("SELECT COUNT(tag) AS count, tag FROM post_tags GROUP BY tag ORDER BY count ASC LIMIT 1")._2(0)(0).toInt
+		val max = DB.runQuery("SELECT COUNT(tag) AS count, tag FROM post_tags GROUP BY tag ORDER BY count DESC LIMIT 1")._2(0)(0).toInt
+		val diff = max - min
+		val distri = diff / 3
+
+		tags._2.map(t => {
+			var cssclass = "smallTag"
+			val count = t(0).toInt
+			if      (count == min)				cssclass = "smallestTag"
+			else if (count == max)				cssclass = "largestTag"
+			else if (count > min + distri *2)	cssclass = "largeTag"
+			else if (count > min + distri)		cssclass = "mediumTag"
+
+			<a class={cssclass} href={"/tags/%s".format(t(2))}>{t(1)}</a>
+		})
+	}
 
 }

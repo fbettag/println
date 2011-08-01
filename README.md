@@ -34,6 +34,7 @@ The main layout is in src/main/webapp/template-hidden/default.html and has all t
 * BitPit: ```<span class="lift:Helpers.bitpit?id=7019"/>```
 * Twitter: ```<span class="lift:Helpers.twitter?user=fbettag"/>```
 * Google Analytics: ```<span class="lift:Helpers.analytics?ua="/>```
+* Tag-Cloud: ```<span class="lift:Tags.cloud"></span>```
 * Copyright Helper: ```&copy; <span class="lift:Helpers.years?since=2010"></span>```
 
 If you want to implement your own, feel free to look at src/main/scala/code/snippets/Helpers.scala for how to do so.
@@ -96,7 +97,6 @@ Simply place the following in one or both of the files (not in any of the repeat
 
 ## Todo
 
-* Tag-Cloud
 * Media Management -> Image-Upload, etc.
 * Twitter, Facebook and Google+ Auto-Publish
 
