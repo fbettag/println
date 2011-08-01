@@ -61,7 +61,6 @@ import code.model._
 class Posts extends Loggable {
 
 	def filterURI(f: String) = f.replaceFirst("^/", "")
-	def filterSlug(f: String) = f.replaceAll("[^a-zA-Z0-9,/-]+", "-").replaceAll("-+", "-")
 
 	lazy val post = Post.one(filterURI(if (S.uri.matches("^/ajax_request/")) S.referer.openOr("new-post") else S.uri)).open_!
 	
@@ -70,7 +69,7 @@ class Posts extends Loggable {
 		JsRaw("$('.println_entry_link').html('%s')".format(n.replaceAll("'", "\\'"))).cmd	
 	
 	def saveSlug(p: Post, n: String): JsCmd =
-		if (p.slug(filterSlug(n)).validate.length == 0 && p.save) 
+		if (p.slug(HtmlHelpers.slugify(n)).validate.length == 0 && p.save) 
 			RedirectTo("/%s".format(p.slug))
 		else
 			JsFx.failed(".println_post_slug") &
@@ -101,31 +100,70 @@ class Posts extends Loggable {
 			JsFx.invalidated(".println_post_publish_now")
 
 
-	def tagsJs(p: Post): NodeSeq = {
-		val addHandler = (SHtml.ajaxText("", addTag(p, _)) \\ "@onblur").toString.replaceAll("this.value", "value")
-		val deleteHandler = (SHtml.ajaxText("", deleteTag(p, _)) \\ "@onblur").toString.replaceAll("this.value", "item.id")
+	def tags(p: Post): NodeSeq = {
+		val addHandler = (SHtml.ajaxText("", addTag(p, _)) \\ "@onblur").toString.replaceAll("this.value", "item._value")
+		val deleteHandler = (SHtml.ajaxText("", deleteTag(p, _)) \\ "@onblur").toString.replaceAll("this.value", "item._value")
 
-		<script type="text/javascript">
-		{"""//<![CDATA[
-			println.tags.add = function(item) { var value = (item.id.match(/^new-/) ? item.name : item.id); %s;};
-			println.tags.delete = function(item) { %s;};
-			println.tags.selected = [%s];
-		//]]>""".format(addHandler, deleteHandler, "")}
-		</script>
+		<xml:group>
+			<script type="text/javascript">
+			{"""//<![CDATA[
+				println.tags.add = function(i) { var item = eval('(' + i + ')'); console.log(item); %s; };
+				println.tags.delete = function(i) { var item = eval('(' + i + ')'); console.log(item); %s; };
+				//]]>""".format(addHandler, deleteHandler, "")}
+			</script>
+			<select name="println_post_tags" id="println_post_tags" class="println_post_tags" multiple="multiple">
+				{Tag.findAll(OrderBy(Tag.name, Ascending), OrderBy(Tag.priority, Ascending)).map(tag => {
+					val selected = if (PostTags.count(By(PostTags.post, p), By(PostTags.tag, tag)) != 0) "class=\"selected\"" else ""
+					XML.loadString("<option value=\"%s\" %s>%s</option>".format(tag.id, selected, tag.name))
+				})}
+			</select>
+		</xml:group>
 	}
 
 	def addTag(p: Post, t: String) = {
-		println("---------------------------\n%s\n------------------------".format(t))
+		val tag: Tag = try {
+				val tid: Int = t.toInt
+				Tag.find(By(Tag.id, tid)) match {
+					case Full(tag: Tag) => tag
+					case _ => throw new IllegalArgumentException("This is not an integer.")
+				}
+			} catch {
+				case _ => Tag.find(By(Tag.name, t)) match {
+					case Full(tag: Tag) => tag
+					case _ => { val btag = Tag.create.name(t).slug(HtmlHelpers.slugify(t)); btag.save; btag }
+				}
+			}
+
+		val pt = PostTags.create.post(p).tag(tag)
+		println("--- Post %s (\"%s\") -- Added Tag: %s -- %s".format(p.id, p.name, t.name, pt.save))
 		Noop
 	}
 
-	def deleteTag(p: Post, t: String) = {
-		println("---------------------------\n%s\n------------------------".format(t))
+	def deleteTag(p: Post, t: String): JsCmd = {
+		var tag = Tag.create
+	
+		try {
+			tag = Tag.find(By(Tag.id, t.toInt)) match {
+				case Full(tag: Tag) => tag
+				case _ => return Noop
+			}
+		}
+		catch { case _ => {
+			tag = Tag.find(By(Tag.name, t)) match {
+				case Full(tag: Tag) => tag
+				case _ => return Noop
+			}
+		}}
+	
+		val pt = PostTags.findAll(By(PostTags.post, p), By(PostTags.tag, tag))
+		println("--- Post %s (\"%s\") -- Deleted Tag: %s -- %s".format(p.id, p.name, t.name, pt.map(pte => {PostTags.delete_!(pte)})))
 		Noop
 	}
 
 
 	/* snippets */
+	def title = <title>{HtmlHelpers.title(post.name)}</title>
+
 	def found: CssSel =
 		".println_entry_link [href]" #>	post.link &
 		".println_entry_link *" #>		post.name &
@@ -150,9 +188,10 @@ class Posts extends Loggable {
 			h.toString.replaceAll("this.value", "\\$('#println-admin-txtt-cached').val()")
 		}
 
+		println("path: %s".format(Props.get("upload.path")))
 
 		".println_post_name" #>					SHtml.ajaxText(post.name, saveName(post, _)) &
-		".println_post_tags" #>					<xml:group><input type="text"/>{tagsJs(post)}</xml:group> &
+		".println_post_tags" #>					<xml:group>{tags(post)}</xml:group> &
 		".println_post_teaser_link" #>			SHtml.ajaxText(post.teaserLink, post.teaserLink(_).saveWithJsFeedback(".println_post_teaser_link input")) &
 		".println_post_publish_now" #>			SHtml.ajaxCheckbox(post.published, setPublished(post, _)) &
 		".println_entry_delete" #>				a(() => post.deleteWithJsFeedback("article[id=post_%s]".format(post.id), post.name), <span>delete this Post</span>) &

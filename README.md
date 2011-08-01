@@ -24,6 +24,8 @@ The official website is currently being done with println itself, please be pati
 
 Currently it is text-only. I will implement media-management as soon as possible. For now i suggest storing your images elsewhere (Flickr, Picasa) as they offer better upload-possibilities from mobile devices anyway.
 
+Another caveat is, that JavaScript is not rendered in the Live-Preview (but properly on the resulting published page).
+
 
 ## Layout and Widgets
 
@@ -32,7 +34,7 @@ The main layout is in src/main/webapp/template-hidden/default.html and has all t
 * BitPit: ```<span class="lift:Helpers.bitpit?id=7019"/>```
 * Twitter: ```<span class="lift:Helpers.twitter?user=fbettag"/>```
 * Google Analytics: ```<span class="lift:Helpers.analytics?ua="/>```
-* Copyright Helper: ```&copy; <span class="lift:Helpers.years?since=2010"><span id="copyright_years"></span></span>```
+* Copyright Helper: ```&copy; <span class="lift:Helpers.years?since=2010"></span>```
 
 If you want to implement your own, feel free to look at src/main/scala/code/snippets/Helpers.scala for how to do so.
 
@@ -94,8 +96,6 @@ Simply place the following in one or both of the files (not in any of the repeat
 
 ## Todo
 
-* jquery.tokeninput.js:641 Fix the dropdown to be selectable by keyboard
-* Tagging -> return way to server
 * Tag-Cloud
 * Media Management -> Image-Upload, etc.
 * Twitter, Facebook and Google+ Auto-Publish

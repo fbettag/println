@@ -107,7 +107,7 @@ class Helpers extends Loggable {
 			case _ =>
 		}
 		
-		"#copyright_years" #> years
+		"*" #> years
 	}
 	
 	

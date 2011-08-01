@@ -2,7 +2,6 @@
 <html lang="en" xmlns:lift="http://liftweb.net/">
 <head>
 	<meta charset="utf-8">
-	<title>println blogging software</title>
 
 	<!--[if ! lte IE 6]>-->
 	<link href="/css/master.css" media="screen" rel="stylesheet">
@@ -16,19 +15,19 @@
 		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 
-	<script type="text/javascript" id="jquery" src="/js/jquery.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.min.js" type="text/javascript" charset="utf-8" id="jquery"></script>
+	<!--<script type="text/javascript" id="jquery" src="/js/jquery.js"></script>-->
 	<script type="text/javascript" id="json" src="/classpath/json.js"></script>
 	
 	<span class="lift:Users.isAdmin">
 		<script type="text/javascript" src="/js/jquery-ui.js"></script>
 		<script type="text/javascript" src="/js/jquery.cookie.js"></script>
-		<script type="text/javascript" src="/js/jquery.tokeninput.js"></script>
+		<script type="text/javascript" src="/js/jquery.fcbkcomplete.js" charset="utf-8"></script>
 		<script type="text/javascript" src="/js/wmd/jquery.wmd.js"></script>
 		<script type="text/javascript" src="/js/println.js"></script>
 		<link rel="stylesheet" type="text/css" href="/css/wmd/wmd.css" />
 		<link rel="stylesheet" type="text/css" href="/css/jquery-ui/println/jquery-ui.css" />
-	    <link rel="stylesheet" type="text/css" href="/css/token-input.css" />
-	    <link rel="stylesheet" type="text/css" href="/css/token-input-facebook.css" />
+	    <link rel="stylesheet" type="text/css" href="/css/jquery.fcbkcomplete.css" />
 		<link rel="stylesheet" type="text/css" href="/css/println.css" media="screen" />
 	</span>
 
@@ -96,7 +95,7 @@
 
 		<footer class="branding">
 			<p>
-				&copy; <span class="lift:Helpers.years?since=2010"><span id="copyright_years"></span></span> Franz Bettag  --
+				&copy; <span class="lift:Helpers.years?since=2010"></span> Franz Bettag  --
 				Powered by <a href="http://println.io">println blogging software</a>
 			</p>
 		</footer>

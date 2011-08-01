@@ -41,6 +41,7 @@ println.state.cookie = { expires: 3650, path: '/' };
  */
 println.tags = {};
 println.tags.add = function(item) {}
+println.tags.delete = function(item) {}
 
 /**
  * Upload
@@ -186,7 +187,7 @@ println.window.restore = function() {
 		h = parseInt(h, 10);
 		if (!isNaN(w) && !isNaN(h) && w >= println.state.cms.dialog('option', 'minWidth') && h >= println.state.cms.dialog('option', 'minHeight')) {
 			println.state.cms.dialog('option', 'width', w);
-			println.state.cms.dialog('option', 'height', h);
+			println.state.cms.dialog('option', 'height', h+41); // + header
 		}
 	}
 
@@ -238,25 +239,12 @@ $(document).ready(function() {
 
 
 	$(".println_post_tags").each(function(i, e) {
-		$(e).tokenInput([
-			{id: 7, name: "Ruby"},
-			{id: 11, name: "Python"},
-			{id: 13, name: "JavaScript"},
-			{id: 17, name: "ActionScript"},
-			{id: 19, name: "Scheme"},
-			{id: 23, name: "Lisp"},
-			{id: 29, name: "C#"},
-			{id: 31, name: "Fortran"},
-			{id: 37, name: "Visual Basic"},
-			{id: 41, name: "C"},
-			{id: 43, name: "C++"},
-			{id: 47, name: "Java"}
-		], {
-			preventDuplicates: true,
-			theme: 'facebook',
-			// onAdd: println.tags.add,
-			// onDelete: println.tags.delete,
-			// prePopulate: println.tags.selected
+		$(e).fcbkcomplete({
+			filter_selected: true,
+			addontab: true,
+			onselect: println.tags.add,
+			onremove: println.tags.delete,
+			newel: true
 		});
 	});
 	

@@ -46,6 +46,7 @@ import scala.xml._
 import scala.collection.immutable.TreeMap
 
 import code.model._
+import code.snippet._
 
 
 object XhtmlTemplateResponse extends HeaderDefaults {
@@ -157,6 +158,9 @@ class Boot {
 
 					case _ if (req.uri.matches("/sitemap(\\.xml)?")) =>
 						NotFoundAsResponse(XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8"))
+					
+					case _ if (req.uri.matches("^/tag/.+$") && Tag.findAll(By(Tag.slug, req.uri.replaceFirst("^/tag/", ""))).length != 0) =>
+						NotFoundAsResponse(XhtmlTemplateResponse(ParsePath("tag" :: Nil, "html", false, false), 200))
 
 					case _ if (Post.one(req.uri.replaceFirst("^/", "")) != Empty) =>
 						NotFoundAsResponse(XhtmlTemplateResponse(ParsePath("post" :: Nil, "html", false, false), 200))

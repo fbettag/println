@@ -56,6 +56,12 @@ class Tag extends LongKeyedMapper[Tag] with IdPK with ManyToMany {
 		override def dbNotNull_? = true
 	}
 
+	object slug extends MappedString(this, 60) {
+		override def dbIndexed_? = true
+		override def dbNotNull_? = true
+		override def validations = valUnique("Slug must be unique!") _ :: super.validations
+	}
+
 	object twitter extends MappedString(this, 30)
 	
 	object priority extends MappedInt(this)
@@ -64,7 +70,12 @@ class Tag extends LongKeyedMapper[Tag] with IdPK with ManyToMany {
 	
 	def userPosts = posts.all.sort((e1, e2) => (e1.publishDate.is compareTo e2.publishDate.is) > 0)
 	def publicPosts = userPosts.filter(p => ! (p.published && (p.publishDate compareTo new Date) > 0))
-	
+
+	def listPosts = User.currentUser match {
+		case Full(u: User) => userPosts
+		case _ => publicPosts
+	}
+
 }
 
 object Tag extends Tag with LongKeyedMetaMapper[Tag] {
@@ -89,7 +100,7 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 		override def validations = valUnique("Slug must be unique!") _ :: checkForPreoccupiedSlugs _ :: super.validations
 
 		def checkForPreoccupiedSlugs(s: String) = {
-			if (s.matches("^(post/?|stats/?|users(/.*)?)$"))
+			if (s.matches("^(post/?|stats/?|users(/.*)?|tag(/.*)?)$"))
 				List(FieldError(this, "You cannot use a pre-defined slug."))
 			else List[FieldError]()		
 		}
@@ -176,8 +187,10 @@ object Post extends Post with LongKeyedMetaMapper[Post] {
 	override def dbTableName = "posts"
 
 	def all = User.currentUser match {
-		case Full(u: User) => Post.findAll(OrderBy(Post.publishDate, Ascending))
-		case _ => Post.findAll(By(Post.published, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Ascending))
+		case Full(u: User) =>
+			Post.findAll(By(Post.published, false), OrderBy(Post.createdAt, Descending)) ++
+			Post.findAll(By(Post.published, true), OrderBy(Post.publishDate, Descending))
+		case _ => Post.findAll(By(Post.published, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Descending))
 	}
 
 	def one(nameOrId: String) = User.currentUser match {
@@ -197,7 +210,7 @@ object Post extends Post with LongKeyedMetaMapper[Post] {
 }
 
 
-class PostTags extends Mapper[PostTags] {
+class PostTags extends LongKeyedMapper[PostTags] with IdPK  {
   def getSingleton = PostTags
 
   object post extends LongMappedMapper(this, Post)
@@ -205,7 +218,7 @@ class PostTags extends Mapper[PostTags] {
 }
 
 
-object PostTags extends PostTags with MetaMapper[PostTags] {
+object PostTags extends PostTags with LongKeyedMetaMapper[PostTags]  {
 	override def dbTableName = "post_tags"
 
 }

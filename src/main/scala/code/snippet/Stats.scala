@@ -74,6 +74,8 @@ class Stats extends Loggable {
 	
 
 	/* snippets */
+	def title = <title>{HtmlHelpers.title("Statistics")}</title>
+	
 	def track = {
 		try { WebTrack.track } catch { case _ => }
 		NodeSeq.Empty	

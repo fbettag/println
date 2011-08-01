@@ -76,16 +76,21 @@ object DateTimeHelpers {
 		val pubDate = p.publishDate.toRichString
 		val pubDateISO = p.publishDate.toISOString
 
-		if (p.published.is) {
-			if (p.publishDate.is.before(new Date))
-				<p class="meta">Published on
-					<time datetime={pubDateISO} pubdate="pubdate">{pubDate}</time>
-				</p>
-			else
-				<p class="meta">Will be published on <time datetime={pubDateISO} pubdate="pubdate">{pubDate}</time></p>
+		<p class="meta">
+			<xml:group>
+				Tags: {XML.loadString("<xml:group>" + p.tags.map(t => "<a href=\"/tag/%s\">%s</a>".format(t.slug, t.name)).mkString(", ") + "</xml:group>")}
+			</xml:group>
+			<br/>
 
-		}
-		else <p class="meta">This Post is not published yet.</p>
+			{if (p.published.is) {
+				if (p.publishDate.is.before(new Date))
+					<xml:group>Published on <time datetime={pubDateISO} pubdate="pubdate">{pubDate}</time></xml:group>
+				else
+					<xml:group>>Will be published on <time datetime={pubDateISO} pubdate="pubdate">{pubDate}</time></xml:group>
+
+			}
+			else <xml:group>This Post is not published yet.</xml:group>}
+		</p>
 	}
 
 	def updateTimestamps(p: Post): JsCmd =
@@ -98,6 +103,28 @@ object DateTimeHelpers {
 object HtmlHelpers {
 
 	def filter(a: String) = a.replaceAll("<(hr|br)>", "<$1/>")
+
+	def slugify(a: String) =
+		a.replaceAll(" ", "-").
+		replaceAll("%E2%82%AC", "euro").
+        replaceAll("%C3%84", "ae").
+        replaceAll("%C3%A4", "ae").
+        replaceAll("%C3%96", "oe").
+        replaceAll("%C3%B6", "oe").
+        replaceAll("%C3%9C", "ue").
+        replaceAll("%C3%BC", "ue").
+        replaceAll("%C3%9F", "ss").
+        replaceAll("%26", "und").
+        replaceAll("@", "-at-").
+        replaceAll("[^a-zA-Z0-9]+", "-").
+        replaceAll("-+", "-").
+        replaceAll("(^\\-*|\\-*$)", "")
+
+	def title(title: String) =
+		Props.get("title") match {
+			case Full(t: String) => "%s: %s".format(t, title)
+			case _ => title
+		}
 
 }
 

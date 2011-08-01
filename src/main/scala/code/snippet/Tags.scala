@@ -44,6 +44,10 @@ import net.liftweb.mongodb.record.field._
 import net.liftweb.record._
 import net.liftweb.record.field._
 
+
+import net.liftweb.sitemap._
+import net.liftweb.sitemap.Loc._
+
 import scala.xml._
 import scala.util.Random._
 import java.util.{Date, Calendar, UUID}
@@ -54,32 +58,27 @@ import org.bson.types._
 import scalax.file.{Path, PathMatcher}
 import scalax.file.PathMatcher._
 
-import code.model._
 import code.lib._
+import code.model._
 
 
-class Blog extends Loggable {
-
-	lazy val publicPostCount = Post.count(By(Post.published, true), By_<(Post.publishDate, new Date))
+class Tags extends Loggable {
+  
+	val tag = Tag.find(By(Tag.slug, S.uri.replaceFirst("^/tag/", ""))).open_!
 
 	/* snippets */
-	def step1register(xhtml: NodeSeq) = if (User.count() == 0) xhtml else NodeSeq.Empty
-	def step1login(xhtml: NodeSeq) = if (!User.isLoggedIn_? && User.count() > 0 && publicPostCount == 0) xhtml else NodeSeq.Empty
-	def step2(xhtml: NodeSeq) = if (User.isLoggedIn_? && Post.count() == 0) xhtml else NodeSeq.Empty
+	def name = Text(tag.name)
+	def title = <title>{HtmlHelpers.title(tag.name)}</title>
 
 	def articles: CssSel =
-		if (Post.count() == 0)
-			"section" #> ""
-		else
-			"li *" #> Post.all.map(p =>
-				"article [id]" #>							"post_%s".format(p.id) &
-				".println_entry_link [href]" #>				p.link &
-				".println_entry_link *" #>					p.name &
-				".println_entry_teaser_link [href]" #>		p.link &
-				".println_entry_teaser_link *" #>			p.teaserLink &
-				".println_post_footer *" #>					DateTimeHelpers.postFooter(p) &
-				".println_post_footer [id]" #>				"println_entry_footer_%s".format(p.id) &
-				".println_entry_teaser *" #>				p.teaserText)
+		"li *" #> tag.listPosts.map(p =>
+			"article [id]" #>							"post_%s".format(p.id) &
+			".println_entry_link [href]" #>				p.link &
+			".println_entry_link *" #>					p.name &
+			".println_entry_teaser_link [href]" #>		p.link &
+			".println_entry_teaser_link *" #>			p.teaserLink &
+			".println_post_footer *" #>					DateTimeHelpers.postFooter(p) &
+			".println_post_footer [id]" #>				"println_entry_footer_%s".format(p.id) &
+			".println_entry_teaser *" #>				p.teaserText)
 
 }
-
