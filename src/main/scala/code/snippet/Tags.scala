@@ -88,8 +88,16 @@ class Tags extends Loggable {
 			ON (t.id = pt.tag)
 			GROUP BY t.name, t.slug ORDER BY count, t.name
 		""")
-		val min = DB.runQuery("SELECT COUNT(tag) AS count, tag FROM post_tags GROUP BY tag ORDER BY count ASC LIMIT 1")._2(0)(0).toInt
-		val max = DB.runQuery("SELECT COUNT(tag) AS count, tag FROM post_tags GROUP BY tag ORDER BY count DESC LIMIT 1")._2(0)(0).toInt
+		val min = try {
+			DB.runQuery("SELECT COUNT(tag) AS count, tag FROM post_tags GROUP BY tag ORDER BY count ASC LIMIT 1")._2(0)(0).toInt
+		} catch {
+			case _ => 0
+		}
+		val max = try {
+			DB.runQuery("SELECT COUNT(tag) AS count, tag FROM post_tags GROUP BY tag ORDER BY count DESC LIMIT 1")._2(0)(0).toInt
+		} catch {
+			case _ => 0
+		}
 		val diff = max - min
 		val distri = diff / 3
 
