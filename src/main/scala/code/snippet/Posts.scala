@@ -203,7 +203,7 @@ class Posts extends Loggable {
 		".println_post_publish_now" #>			SHtml.ajaxCheckbox(post.published, setPublished(post, _)) &
 		".println_post_publish_date" #>			SHtml.ajaxText(post.publishDate.toFormattedString, savePublishDate(post, _)) &
 		".println_post_publish_in_stream" #>	SHtml.ajaxCheckbox(post.publishInStream, setPublishInStream(post, _)) &
-		".println_post_publish_date" #>			SHtml.ajaxText(post.publishDate.toFormattedString, savePublishDate(post, _)) &
+		".println_post_show_date" #>			SHtml.ajaxCheckbox(post.showDate, setShowDate(post, _)) &
 		"#println-admin-txtc" #>				<textarea onblur={"%s; %s".format(contentHandler, contentCacheHandler)}>{post.content}</textarea> &
 		"#println-admin-txtt" #>				<textarea onblur={"%s; %s".format(teaserHandler, teaserCacheHandler)}>{post.teaser}</textarea> &
 		".println_post_slug" #>					SHtml.ajaxText(post.slug, saveSlug(post, _),
