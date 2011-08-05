@@ -109,7 +109,7 @@ class Tags extends Loggable {
 			else if (count > min + distri *2)	cssclass = "largeTag"
 			else if (count > min + distri)		cssclass = "mediumTag"
 
-			<a class={cssclass} href={"/tags/%s".format(t(2))}>{t(1)}</a>
+			<a class={cssclass} href={"/tag/%s".format(t(2))}>{t(1)}</a>
 		})
 	}
 

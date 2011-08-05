@@ -88,19 +88,23 @@ object DateTimeHelpers {
 		val pubDateISO = p.publishDate.toISOString
 
 		<p class="meta">
-			<xml:group>
-				Tags: {XML.loadString("<xml:group>" + p.tags.map(t => "<a href=\"/tag/%s\">%s</a>".format(t.slug, t.name)).mkString(", ") + "</xml:group>")}
-			</xml:group>
-			<br/>
+			{if (p.tags.length > 0) {
+				<xml:group>
+					Tags: {XML.loadString("<xml:group>" + p.tags.map(t => "<a href=\"/tag/%s\">%s</a>".format(t.slug, t.name)).mkString(", ") + "</xml:group>")}
+				</xml:group>
+				<br/>
+			}}
 
-			{if (p.published.is) {
-				if (p.publishDate.is.before(new Date))
-					<xml:group>Published on <time datetime={pubDateISO} pubdate="pubdate">{pubDate}</time></xml:group>
-				else
-					<xml:group>>Will be published on <time datetime={pubDateISO} pubdate="pubdate">{pubDate}</time></xml:group>
+			{if (p.showDate) {
+				if (p.published.is) {
+					if (p.publishDate.is.before(new Date))
+						<xml:group>Published on <time datetime={pubDateISO} pubdate="pubdate">{pubDate}</time></xml:group>
+					else
+						<xml:group>>Will be published on <time datetime={pubDateISO} pubdate="pubdate">{pubDate}</time></xml:group>
 
-			}
-			else <xml:group>This Post is not published yet.</xml:group>}
+				}
+				else <xml:group>This Post is not published yet.</xml:group>
+			}}
 		</p>
 	}
 

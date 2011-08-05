@@ -91,6 +91,16 @@ class Posts extends Loggable {
 		else
 			JsRaw("$('.println_post_slug').attr('disabled', 'disabled')")
 
+	def setPublishInStream(p: Post, enabled: Boolean): JsCmd = {
+		p.publishInStream(enabled).save
+		Noop
+	}
+
+	def setShowDate(p: Post, enabled: Boolean): JsCmd = {
+		p.showDate(enabled).save
+		Noop
+	}
+
 	def setPublished(p: Post, b: Boolean): JsCmd =
 		if (p.publish(b).saved_?)
 			DateTimeHelpers.updateTimestamps(p.reload) &
@@ -191,6 +201,8 @@ class Posts extends Loggable {
 		".println_post_tags" #>					<xml:group>{tags(post)}</xml:group> &
 		".println_post_teaser_link" #>			SHtml.ajaxText(post.teaserLink, post.teaserLink(_).saveWithJsFeedback(".println_post_teaser_link input")) &
 		".println_post_publish_now" #>			SHtml.ajaxCheckbox(post.published, setPublished(post, _)) &
+		".println_post_publish_date" #>			SHtml.ajaxText(post.publishDate.toFormattedString, savePublishDate(post, _)) &
+		".println_post_publish_in_stream" #>	SHtml.ajaxCheckbox(post.publishInStream, setPublishInStream(post, _)) &
 		".println_post_publish_date" #>			SHtml.ajaxText(post.publishDate.toFormattedString, savePublishDate(post, _)) &
 		"#println-admin-txtc" #>				<textarea onblur={"%s; %s".format(contentHandler, contentCacheHandler)}>{post.content}</textarea> &
 		"#println-admin-txtt" #>				<textarea onblur={"%s; %s".format(teaserHandler, teaserCacheHandler)}>{post.teaser}</textarea> &

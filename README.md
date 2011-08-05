@@ -109,6 +109,7 @@ Some of the JavaScript- and Request-Routing-Stuff is **very** hackish, but it al
 
 ## Todo
 
+* AutoScroll/Sticky Editor-Window
 * JavaScript-Evaluation in Live-Preview
 * Media Management -> Image-Upload, etc.
 * Twitter, Facebook and Google+ Auto-Publish

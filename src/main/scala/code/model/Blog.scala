@@ -132,6 +132,18 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 		override def defaultValue = false
 	}
 
+	object publishInStream extends MappedBoolean(this) {
+		override def dbIndexed_? = true
+		override def dbNotNull_? = true
+		override def defaultValue = true
+	}
+	
+	object showDate extends MappedBoolean(this) {
+		override def dbIndexed_? = true
+		override def dbNotNull_? = true
+		override def defaultValue = true
+	}
+
 	object publishDate extends FBMappedDateTime(this)
 	
 	object updatedAt extends FBMappedUpdatedAt(this)
