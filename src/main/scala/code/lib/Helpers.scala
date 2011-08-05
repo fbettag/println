@@ -168,7 +168,8 @@ trait JsEffects[A <: Mapper[A]] {
 		else JsFx.failed(selector)
 
 	private def deleteJs(selector: String): JsCmd = {
-		val handler =  (SHtml.ajaxButton("delete", () => this.delete_!!(selector)) \\ "@onclick").toString.replaceAll("&quot;", "'")
+		val handler =  (SHtml.ajaxButton("delete", () => this.delete_!!(selector)) \\ "@onclick").toString.replaceAll("&quot;", "'").replaceAll("return false;+$", "")
+		println("-----------------------\n%s\n%s\n-------------------".format(handler, JsRaw(handler).cmd))
 		JsRaw(handler).cmd
 	}
 

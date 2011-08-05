@@ -49,12 +49,15 @@ import code.model._
 
 class Users extends Loggable {
 
-	/* snippets */
-	def isAdmin(xhtml: NodeSeq) = if (User.isAdmin_?) xhtml else NodeSeq.Empty
-	def isNotAdmin(xhtml: NodeSeq) = if (!User.isAdmin_?) xhtml else NodeSeq.Empty
+	lazy val isAdmin_? = User.isAdmin_?
+	lazy val isUser_? = User.isLoggedIn_? || S.uri.equals("/users/login")
 
-	def isLoggedIn(xhtml: NodeSeq) = if (User.isLoggedIn_?) xhtml else NodeSeq.Empty
-	def isNotLoggedIn(xhtml: NodeSeq) = if (!User.isLoggedIn_?) xhtml else NodeSeq.Empty
+	/* snippets */
+	def isAdmin(xhtml: NodeSeq) = if (isAdmin_?) xhtml else NodeSeq.Empty
+	def isNotAdmin(xhtml: NodeSeq) = if (!isAdmin_?) xhtml else NodeSeq.Empty
+
+	def isLoggedIn(xhtml: NodeSeq) = if (isUser_?) xhtml else NodeSeq.Empty
+	def isNotLoggedIn(xhtml: NodeSeq) = if (!isUser_?) xhtml else NodeSeq.Empty
 
 }
 
