@@ -133,6 +133,16 @@ println.upload.progress = function(uuid, cb) {
 };
 
 
+println.post = {};
+
+println.post.add = function() {};
+println.post.new = function() {
+	$('#new-post').dialog("open");
+	$('#new-post-input').select();
+	return false;
+};
+
+
 /**
  * Markup
  */
@@ -248,6 +258,14 @@ $(document).ready(function() {
 		});
 	});
 	
+	
+	$('#new-post').dialog({
+		autoOpen: false,
+		buttons: {
+			"Create this post": println.post.add,
+			Cancel: function() { $(this).dialog('close'); }
+		}
+	});
 	
 	$("#println-admin form input[type=text], ul.token-input-list").each(function(i, e) {
 		$(e).addClass('text ui-widget-content ui-corner-all');

@@ -18,13 +18,13 @@ The official website is currently being done with println itself, please be pati
 * Lots of widgets by default (see next section)
 * Atom-Feed (/atom.xml)
 * Google Sitemap (/sitemap.xml)
-
+* AJAX-/Facebook-Style Tagging with Tag-cloud
 
 ## Caveats
 
 Currently it is text-only. I will implement media-management as soon as possible. For now i suggest storing your images elsewhere (Flickr, Picasa) as they offer better upload-possibilities from mobile devices anyway.
 
-Another caveat is, that JavaScript is not rendered in the Live-Preview (but properly on the resulting published page).
+Another caveat is, that JavaScript is not rendered in the Live-Preview (but properly on the resulting published page). Meaning that if you enter <script src="..."></script> into the Live-Editor, it won't show in the Live-Preview, but will be perfectly normal on the website.
 
 
 ## Layout and Widgets
@@ -88,6 +88,11 @@ MongoDB is soley used for statistical analysis like Browser-, Referer- or Target
 If you want to try this project without MongoDB, feel free to do so. Just make sure you set "useMongoDB_?" to false in Boot.scala.
 
 
+## Page title
+
+Instead of writing stupid SQL-Queries to get the default pagetitle, the pagetitle is defined in the properties files (default.props, production.default.props). IMHO this is a performance-saver as well as practiable.. How often do you change your main-site title?
+
+
 ## Tracking atom.xml and sitemap.xml
 
 Simply place the following in one or both of the files (not in any of the repeated sections of course):
@@ -95,8 +100,14 @@ Simply place the following in one or both of the files (not in any of the repeat
 ```<lift:Stats.track/>```
 
 
+## Remarks
+
+Some of the JavaScript- and Request-Routing-Stuff is **very** hackish, but it also shows the capabilities Lift has to offer or how you can reuse or abuse them.
+
+
 ## Todo
 
+* JavaScript-Evaluation in Live-Preview
 * Media Management -> Image-Upload, etc.
 * Twitter, Facebook and Google+ Auto-Publish
 

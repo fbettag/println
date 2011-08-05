@@ -63,7 +63,6 @@ class Tag extends LongKeyedMapper[Tag] with IdPK with ManyToMany {
 	}
 
 	object twitter extends MappedString(this, 30)
-	
 	object priority extends MappedInt(this)
 
 	object posts extends MappedManyToMany(PostTags, PostTags.tag, PostTags.post, Post)
@@ -167,8 +166,10 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 		try {
 			XML.loadString("<span>" + HtmlHelpers.filter(this.teaserCache.is) + "</span>")
 		} catch {
-			case _ if (User.currentUser != Empty && this.teaserCache.is == "") => <p/>
-			case _ if (User.currentUser != Empty) => <p>Malformed teaser-body could not be parsed.</p>
+			case _ if (User.currentUser != Empty) => this.teaserCache match {
+				case _ if (this.teaserCache.is == null || this.teaserCache.is.matches("^(\\s*(\\r|\\n|\\r\\n)\\s*)$")) => <p/>
+				case _ => <p>Malformed teaser-body could not be parsed.</p>
+			}
 			case _ => NodeSeq.Empty
 		}
 	
@@ -176,10 +177,26 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 		try {
 			XML.loadString("<span>" + HtmlHelpers.filter(this.contentCache.is) + "</span>")
 		} catch {
-			case _ if (User.currentUser != Empty && this.contentCache.is == "") => <p/>
-			case _ if (User.currentUser != Empty) => <p>Malformed content-body could not be parsed.</p>
+			case _ if (User.currentUser != Empty) => this.contentCache match {
+				case _ if (this.contentCache.is == null || this.contentCache.is.matches("^(\\s*(\\r|\\n|\\r\\n)\\s*)$")) => <p/>
+				case _ => <p>Malformed content-body could not be parsed.</p>
+			}
 			case _ => NodeSeq.Empty
 		}
+
+	// def teaserText = getCached(this.teaserCache)
+	// def contentText = getCached(this.contentCache)
+	// 
+	// private def getCached(a: MappedString[this]): NodeSeq =
+	// 	try {
+	// 		XML.loadString("<span>" + HtmlHelpers.filter(a.is) + "</span>")
+	// 	} catch {
+	// 		case _ if (User.currentUser != Empty) => a match {
+	// 			case _ if (a.is == null || a.is.matches("^(\\s*(\\r|\\n|\\r\\n)\\s*)$")) => <p/>
+	// 			case _ => <p>Malformed body could not be parsed.</p>
+	// 		}
+	// 		case _ => NodeSeq.Empty
+	// 	}
 
 }
 

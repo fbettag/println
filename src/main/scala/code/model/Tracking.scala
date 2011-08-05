@@ -75,17 +75,13 @@ object WebTrack extends WebTrack with MongoMetaRecord[WebTrack] {
 					/* view tracking */
 					val url = WebView.countUp(r.uri)
 
-					/* referer tracking ONLY if NOT pixforce */
+					/* referer tracking ONLY if NOT directly */
 					val referer = S.referer.openOr("direct")
 
 					val session = WebSession.countUp(S.containerSession.map(_.sessionId).openOr(""))
 				
-					if (referer.matches("^http://*pixforce.de.*$")) {
-						WebTrack.createRecord.timestamp(Calendar.getInstance).browser(browser.id).url(url.id).session(session.id).save
-					} else {
-						var ref = WebReferer.from(referer)
-						WebTrack.createRecord.timestamp(Calendar.getInstance).browser(browser.id).url(url.id).session(session.id).referer(ref.id).save
-					}
+					var ref = WebReferer.from(referer)
+					WebTrack.createRecord.timestamp(Calendar.getInstance).browser(browser.id).url(url.id).session(session.id).referer(ref.id).save
 				}
 				case _ =>
 			}

@@ -99,7 +99,6 @@ class Posts extends Loggable {
 			JsFx.failed(".println_post_publish_now") &
 			JsFx.invalidated(".println_post_publish_now")
 
-
 	def tags(p: Post): NodeSeq = {
 		val addHandler = (SHtml.ajaxText("", addTag(p, _)) \\ "@onblur").toString.replaceAll("this.value", "item._value")
 		val deleteHandler = (SHtml.ajaxText("", deleteTag(p, _)) \\ "@onblur").toString.replaceAll("this.value", "item._value")
@@ -136,7 +135,7 @@ class Posts extends Loggable {
 
 		val pt = PostTags.create.post(p).tag(tag)
 		println("--- Post %s (\"%s\") -- Added Tag: %s -- %s".format(p.id, p.name, t.name, pt.save))
-		Noop
+		DateTimeHelpers.updateTimestamps(p.reload)
 	}
 
 	def deleteTag(p: Post, t: String): JsCmd = {
@@ -157,7 +156,7 @@ class Posts extends Loggable {
 	
 		val pt = PostTags.findAll(By(PostTags.post, p), By(PostTags.tag, tag))
 		println("--- Post %s (\"%s\") -- Deleted Tag: %s -- %s".format(p.id, p.name, t.name, pt.map(pte => {PostTags.delete_!(pte)})))
-		Noop
+		DateTimeHelpers.updateTimestamps(p.reload)
 	}
 
 
@@ -194,13 +193,42 @@ class Posts extends Loggable {
 		".println_post_tags" #>					<xml:group>{tags(post)}</xml:group> &
 		".println_post_teaser_link" #>			SHtml.ajaxText(post.teaserLink, post.teaserLink(_).saveWithJsFeedback(".println_post_teaser_link input")) &
 		".println_post_publish_now" #>			SHtml.ajaxCheckbox(post.published, setPublished(post, _)) &
-		".println_entry_delete" #>				a(() => post.deleteWithJsFeedback("article[id=post_%s]".format(post.id), post.name), <span>delete this Post</span>) &
 		".println_post_publish_date" #>			SHtml.ajaxText(post.publishDate.toFormattedString, savePublishDate(post, _)) &
 		"#println-admin-txtc" #>				<textarea onblur={"%s; %s".format(contentHandler, contentCacheHandler)}>{post.content}</textarea> &
 		"#println-admin-txtt" #>				<textarea onblur={"%s; %s".format(teaserHandler, teaserCacheHandler)}>{post.teaser}</textarea> &
 		".println_post_slug" #>					SHtml.ajaxText(post.slug, saveSlug(post, _),
 													if (post.published) "disabled" -> "disabled" else "style" -> "",
 													if (post.slug == "post") "class" -> "invalid" else "style" -> "")
+	}
+	
+	def delete = a(() => post.deleteWithJsFeedback("article[id=post_%s]".format(post.id), post.name), Text("permanently delete this Post"))
+
+	def add = {
+		def addPost(n: String) = {
+			val p = Post.create.name(n).slug(HtmlHelpers.slugify(n))
+			if (p.validate.length == 0 && p.save)
+				RedirectTo("/%s".format(p.slug))
+			else
+				JsFx.failed("#post-name") &
+				JsFx.invalidated("#post-name")
+		}
+		
+		val addHandler = (SHtml.ajaxText("a", addPost(_)) \\ "@onblur").toString.replaceAll("this.value", "post")
+		
+
+		<div id="new-post" title="New Blog Post">
+			<script type="text/javascript">
+			{"""//<![CDATA[
+				println.post.add = function() { var post = $('#new-post-input').val(); console.log("New Post: " + post); %s; };
+				//]]>""".format(addHandler)}
+			</script>
+			<form onsubmit="javascript:println.post.add(); return false;">
+			<fieldset>
+				<label for="name">Name</label>
+				<input type="text" name="new-post-name" id="new-post-input" class="text ui-widget-content ui-corner-all" />
+			</fieldset>
+			</form>
+		</div>
 	}
 
 }

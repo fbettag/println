@@ -65,12 +65,14 @@
 			<span class="lift:Users.isAdmin">
 				<h3>Admin Menu</h3>
 				<ul class="menu">
-					<li><a href="/post">New Post</a></li>
+					<li><a href="#" onclick="javascript:return println.post.new();">New Post</a></li>
 					<li><a href="/admin/users">Users</a></li>
 					<li><a href="/users/logout">Logout</a></li>
 					<li><a href="/users/edit">Edit User</a></li>
 					<li><a href="/users/change_password">Change Password</a></li>
-				</ul> 
+				</ul>
+				
+				<span class="lift:Posts.add"></span>
 			</span>
 
 			<h3>Links</h3>
