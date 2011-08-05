@@ -277,7 +277,7 @@ nav.categories ul.menu {
 div.feed {
 	margin: 1.75em 0; }
 
-.tagcloud a { margin: 5px; }
+.tagcloud a { float: left; margin: 5px; }
 .tagcloud a.smallestTag { font-size: 0.6em; }
 .tagcloud a.smallTag { font-size: 0.75em; }
 .tagcloud a.mediumTag { font-size: 0.9em; }
