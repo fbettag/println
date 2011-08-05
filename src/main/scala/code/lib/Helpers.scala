@@ -127,7 +127,8 @@ object HtmlHelpers {
         replaceAll("%C3%9F", "ss").
         replaceAll("%26", "und").
         replaceAll("@", "-at-").
-        replaceAll("[^a-zA-Z0-9]+", "-").
+        replaceAll("[^a-zA-Z0-9/]+", "-").
+        replaceAll("/+", "/").
         replaceAll("-+", "-").
         replaceAll("(^\\-*|\\-*$)", "")
 
