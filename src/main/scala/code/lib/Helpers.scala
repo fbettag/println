@@ -49,6 +49,17 @@ import ag.bett.scala.lib.Exec._
 
 import code.model._
 
+
+object PrintlnMongo {
+	
+	lazy val enabled_? = Props.get("mo.host") match {
+		case Full(a: String) => true
+		case _ => false
+	}
+
+}
+
+
 object DateTimeHelpers {
 
 	var timezone = "CET"

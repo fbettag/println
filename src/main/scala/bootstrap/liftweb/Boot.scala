@@ -45,6 +45,7 @@ import net.liftweb.mongodb._
 import scala.xml._
 import scala.collection.immutable.TreeMap
 
+import code.lib._
 import code.model._
 import code.snippet._
 
@@ -71,8 +72,6 @@ object XhtmlNotFoundResponse extends HeaderDefaults {
 class Boot {
 	def boot {
 		
-		val useMongoDB_? = false
-		
 		if (!DB.jndiJdbcConnAvailable_?) {
 			val vendor = new StandardDBVendor(
 				Props.get("db.driver") openOr "org.postgresql.Driver",
@@ -87,7 +86,7 @@ class Boot {
 		Schemifier.schemify(true, Schemifier.infoF _, User, Post, Tag, PostTags)
 
 		
-		if (useMongoDB_?) {
+		if (PrintlnMongo.enabled_?) {
 			val srvr = new ServerAddress(Props.get("mo.host") openOr "127.0.0.1", Props.get("mo.port").openOr("27017").toInt)
 			val mo = new MongoOptions
 			mo.socketTimeout = 10
@@ -99,7 +98,7 @@ class Boot {
 
 		val redirectUnlessUser = If(() => User.loggedIn_?, () => RedirectResponse("/"))
 		val redirectUnlessAdmin = If(() => User.isAdmin_?, () => RedirectResponse("/"))
-		val redirectUnlessMongo = If(() => useMongoDB_?, () => RedirectResponse("/"))
+		val redirectUnlessMongo = If(() => PrintlnMongo.enabled_?, () => RedirectResponse("/"))
 
 		// Build SiteMap
 		def sitemap = SiteMap(

@@ -77,7 +77,9 @@ class Stats extends Loggable {
 	def title = <title>{HtmlHelpers.title("Statistics")}</title>
 	
 	def track = {
-		try { WebTrack.track } catch { case _ => }
+		if (PrintlnMongo.enabled_?) {
+			try { WebTrack.track } catch { case _ => }
+		}
 		NodeSeq.Empty	
 	}
 	
@@ -131,6 +133,7 @@ class Stats extends Loggable {
 	// We cache this since we might need .list more than once on a page
 	def list = listStore match {
 		case Full(a: CssSel) => a
+		case _ if (!PrintlnMongo.enabled_?) => "*" #> ""
 		case _ => {
 			listStore = Full(
 				"#visitors_today *" #> WebTrack.visitorsToday &

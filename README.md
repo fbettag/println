@@ -83,9 +83,9 @@ Visit http://127.0.0.1:8080 with your browser and follow the on-screen instructi
 
 ## Without MongoDB
 
-MongoDB is soley used for statistical analysis like Browser-, Referer- or Target-URL-tracking. This is not fully tested yet, but it has interesting results and more flexibility as opposed to other commercial products.
+MongoDB is solely used for statistical analysis like Browser-, Referer- or Target-URL-tracking. This is not fully tested yet, but it has interesting results and more flexibility as opposed to other commercial products.
 
-If you want to try this project without MongoDB, feel free to do so. Just make sure you set "useMongoDB_?" to false in Boot.scala.
+If you want to try it without MongoDB, feel free to do so. Just make sure you unset/comment "mo.host" in your .props-files.
 
 
 ## Page title

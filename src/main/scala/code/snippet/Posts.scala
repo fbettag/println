@@ -104,12 +104,10 @@ class Posts extends Loggable {
 		val deleteHandler = (SHtml.ajaxText("", deleteTag(p, _)) \\ "@onblur").toString.replaceAll("this.value", "item._value")
 
 		<xml:group>
-			<script type="text/javascript">
-			{"""//<![CDATA[
+			{Script(JsRaw("""
 				println.tags.add = function(i) { var item = eval('(' + i + ')'); console.log(item); %s; };
 				println.tags.delete = function(i) { var item = eval('(' + i + ')'); console.log(item); %s; };
-				//]]>""".format(addHandler, deleteHandler, "")}
-			</script>
+			 """.format(addHandler, deleteHandler, "")))}
 			<select name="println_post_tags" id="println_post_tags" class="println_post_tags" multiple="multiple">
 				{Tag.findAll(OrderBy(Tag.name, Ascending), OrderBy(Tag.priority, Ascending)).map(tag => {
 					val selected = if (PostTags.count(By(PostTags.post, p), By(PostTags.tag, tag)) != 0) "class=\"selected\"" else ""
@@ -217,11 +215,7 @@ class Posts extends Loggable {
 		
 
 		<div id="new-post" title="New Blog Post">
-			<script type="text/javascript">
-			{"""//<![CDATA[
-				println.post.add = function() { var post = $('#new-post-input').val(); console.log("New Post: " + post); %s; };
-				//]]>""".format(addHandler)}
-			</script>
+			{Script(JsRaw("println.post.add=function(){var post=$('#new-post-input').val();console.log(\"New Post: \"+post);%s;};".format(addHandler)))}
 			<form onsubmit="javascript:println.post.add(); return false;">
 			<fieldset>
 				<label for="name">Name</label>

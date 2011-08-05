@@ -76,8 +76,7 @@ class Helpers extends Loggable {
 
 	def analytics: NodeSeq = S.attr("ua") match {
 		case Full(ua: String) if (ua != "") =>
-			<script type="text/javascript">{"""
-				//<![CDATA[
+			Script(JsRaw("""
 				var _gaq = _gaq || [];
 				_gaq.push(['_setAccount', '%s']);
 				_gaq.push(['_trackPageview']);
@@ -85,8 +84,7 @@ class Helpers extends Loggable {
 					var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 					ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 					var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-				})();
-			//]]>""".format(ua.replaceAll("^(UA-)?", "UA-"))}</script>
+				})();""".format(ua.replaceAll("^(UA-)?", "UA-"))))
 
 		case _ => NodeSeq.Empty
 	}
@@ -115,7 +113,7 @@ class Helpers extends Loggable {
 		case Full(id: String) if (id != "") =>
 			<xml:group>
 				<script type="text/javascript" src="http://api.bitp.it/bitp.it.js"></script>
-	      			<script type="text/javascript">{"bitpit({clientId: '%s', forceUIThread: true});".format(id)}</script>
+	      		{Script(JsRaw("bitpit({clientId: '%s', forceUIThread: true});".format(id)))}
 			</xml:group>
 	
 		case _ => NodeSeq.Empty
@@ -128,8 +126,7 @@ class Helpers extends Loggable {
 				<h3>Twitter</h3>
 	        
 				<script src="http://widgets.twimg.com/j/2/widget.js"></script>
-				<script>{"""
-					//<![CDATA[
+				{Script(JsRaw("""
 					new TWTR.Widget({
 						version: 2,
 						type: 'profile',
@@ -158,8 +155,7 @@ class Helpers extends Loggable {
 							behavior: 'all'
 						}
 					}).render().setUser('%s').start();
-					//]]>""".format(tu)}
-				</script>
+					""".format(tu)))}
 			</xml:group>
 	
 		case _ => NodeSeq.Empty
