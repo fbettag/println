@@ -50,7 +50,7 @@ import code.model._
 class Users extends Loggable {
 
 	lazy val isAdmin_? = User.isAdmin_?
-	lazy val isUser_? = User.isLoggedIn_? || S.uri.equals("/users/login")
+	lazy val isUser_? = User.isLoggedIn_? || S.uri.equals("/%s/login".format(User.basePath.filter(s => s != null).mkString("/")))
 
 	/* snippets */
 	def isAdmin(xhtml: NodeSeq) = if (isAdmin_?) xhtml else NodeSeq.Empty
