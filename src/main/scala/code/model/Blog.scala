@@ -217,9 +217,9 @@ object Post extends Post with LongKeyedMetaMapper[Post] {
 
 	def all = User.currentUser match {
 		case Full(u: User) =>
-			Post.findAll(By(Post.published, false), OrderBy(Post.createdAt, Descending)) ++
-			Post.findAll(By(Post.published, true), OrderBy(Post.publishDate, Descending))
-		case _ => Post.findAll(By(Post.published, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Descending))
+			Post.findAll(By(Post.published, false), By(Post.publishInStream, true), OrderBy(Post.createdAt, Descending)) ++
+			Post.findAll(By(Post.published, true), By(Post.publishInStream, true), OrderBy(Post.publishDate, Descending))
+		case _ => Post.findAll(By(Post.published, true), By(Post.publishInStream, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Descending))
 	}
 
 	def one(nameOrId: String) = User.currentUser match {
