@@ -97,7 +97,9 @@ Instead of writing stupid SQL-Queries to get the default pagetitle, the pagetitl
 
 Simply place the following in one or both of the files (not in any of the repeated sections of course):
 
-```<lift:Stats.track/>```
+```
+<lift:Stats.track/>
+```
 
 
 ## Remarks
