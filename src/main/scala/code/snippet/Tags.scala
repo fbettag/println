@@ -44,6 +44,10 @@ import net.liftweb.mongodb.record.field._
 import net.liftweb.record._
 import net.liftweb.record.field._
 
+
+import net.liftweb.sitemap._
+import net.liftweb.sitemap.Loc._
+
 import scala.xml._
 import scala.util.Random._
 import java.util.{Date, Calendar, UUID}
@@ -54,42 +58,51 @@ import org.bson.types._
 import scalax.file.{Path, PathMatcher}
 import scalax.file.PathMatcher._
 
-import code.model._
 import code.lib._
+import code.model._
 
 
-class Sitemap extends Loggable {
+class Tags extends Loggable {
+  
+	lazy val tag = Tag.find(By(Tag.slug, S.uri.replaceFirst("^/tag/", ""))).open_!
 
 	/* snippets */
-	def base: CssSel =
-		"loc *" #>				"http://%s".format(S.hostName)  &
-		"lastmod *" #>			Post.lastmod.toString("yyyy-MM-dd'T'HH:mm:ss.SSSZZ") // manual to avoid errors!
+	def name = Text(tag.name)
+	def title = <title>{HtmlHelpers.title(tag.name)}</title>
 
-	def list: CssSel =
-		"url *" #> (Post.create.name("Home").slug("") :: Post.all).map(p =>
-			"loc *" #>			"http://%s/%s".format(S.hostName, p.slug) &
-			"lastmod *" #>		p.publishDate.toISOString)
+	def articles: CssSel =
+		"li *" #> tag.listPosts.map(p =>
+			"article [id]" #>							"post_%s".format(p.id) &
+			".println_entry_link [href]" #>				p.link &
+			".println_entry_link *" #>					p.name &
+			".println_entry_teaser_link [href]" #>		p.link &
+			".println_entry_teaser_link *" #>			p.teaserLink &
+			".println_post_footer *" #>					DateTimeHelpers.postFooter(p) &
+			".println_post_footer [id]" #>				"println_entry_footer_%s".format(p.id) &
+			".println_entry_teaser *" #>				p.teaserText)
 
-	def atom: CssSel =
-		"id *" #>					"tag:%s,2011:/".format(S.hostName) &
-		"rel=self [href]" #>		"http://%s/atom.xml".format(S.hostName) &
-		"rel=self [alternate]" #>	"http://%s".format(S.hostName) &
-		"generator *" #>			"println" &
-		"generator [uri]" #>		"http://println.io" &
-		"updated *" #>				Post.lastmod.toString("yyyy-MM-dd'T'HH:mm:ss.SSSZZ") & // manual to avoid errors!
-		"entry *" #> Post.all.map(p =>
-			"title *" #>			p.name &
-			"link [href]" #>		"http://%s/%s".format(S.hostName, p.slug) &
-			"published *" #>		p.publishDate.toISOString &
-			"updated *" #>			p.updatedAt.toISOString &
-			"id *" #>				"tag:%s,%s:/".format(S.hostName, p.publishDate.toString("yyyy-MM-dd"), p.slug) &
-			"summary *" #> {
-				try {
-					val tcns = HtmlHelpers.filter(p.teaserCache.is)
-					XML.loadString("<span>" + tcns + "</span>")
-				} catch {
-					case _ => NodeSeq.Empty
-				}
-			})
+	def cloud = {
+		val tags = DB.runQuery("""
+			SELECT COUNT(pt.tag) AS count, t.name AS tag, t.slug AS slug
+			FROM post_tags AS pt LEFT JOIN tags AS t
+			ON (t.id = pt.tag)
+			GROUP BY t.name, t.slug ORDER BY count, t.name
+		""")
+		val min = DB.runQuery("SELECT COUNT(tag) AS count, tag FROM post_tags GROUP BY tag ORDER BY count ASC LIMIT 1")._2(0)(0).toInt
+		val max = DB.runQuery("SELECT COUNT(tag) AS count, tag FROM post_tags GROUP BY tag ORDER BY count DESC LIMIT 1")._2(0)(0).toInt
+		val diff = max - min
+		val distri = diff / 3
+
+		tags._2.map(t => {
+			var cssclass = "smallTag"
+			val count = t(0).toInt
+			if      (count == min)				cssclass = "smallestTag"
+			else if (count == max)				cssclass = "largestTag"
+			else if (count > min + distri *2)	cssclass = "largeTag"
+			else if (count > min + distri)		cssclass = "mediumTag"
+
+			<a class={cssclass} href={"/tags/%s".format(t(2))}>{t(1)}</a>
+		})
+	}
 
 }

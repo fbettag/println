@@ -5,3 +5,7 @@ db.password=
 
 mo.host=127.0.0.1
 mo.port=27017
+
+#upload.path=/data/my.new.blog/public
+
+title=println blogging software

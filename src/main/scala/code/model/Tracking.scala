@@ -67,73 +67,81 @@ object WebTrack extends WebTrack with MongoMetaRecord[WebTrack] {
 
 	def track = {
 		/* browser tracking */
-		val browser = S.request match {
-			case Full(r: Req) => {
-				val browser = WebBrowser.countUp(r.userAgent.openOr("none"))
+		try {
+			val browser = S.request match {
+				case Full(r: Req) => {
+					val browser = WebBrowser.countUp(r.userAgent.openOr("none"))
 
-				/* view tracking */
-				val url = WebView.countUp(r.uri)
+					/* view tracking */
+					val url = WebView.countUp(r.uri)
 
-				/* referer tracking ONLY if NOT pixforce */
-				val referer = S.referer.openOr("direct")
+					/* referer tracking ONLY if NOT pixforce */
+					val referer = S.referer.openOr("direct")
 
-				val session = WebSession.countUp(S.containerSession.map(_.sessionId).openOr(""))
+					val session = WebSession.countUp(S.containerSession.map(_.sessionId).openOr(""))
 				
-				if (referer.matches("^http://*pixforce.de.*$")) {
-					WebTrack.createRecord.timestamp(Calendar.getInstance).browser(browser.id).url(url.id).session(session.id).save
-				} else {
-					var ref = WebReferer.from(referer)
-					WebTrack.createRecord.timestamp(Calendar.getInstance).browser(browser.id).url(url.id).session(session.id).referer(ref.id).save
+					if (referer.matches("^http://*pixforce.de.*$")) {
+						WebTrack.createRecord.timestamp(Calendar.getInstance).browser(browser.id).url(url.id).session(session.id).save
+					} else {
+						var ref = WebReferer.from(referer)
+						WebTrack.createRecord.timestamp(Calendar.getInstance).browser(browser.id).url(url.id).session(session.id).referer(ref.id).save
+					}
 				}
+				case _ =>
 			}
-			case _ =>
-		}
+		} catch { case _ => }
+
 	}
 	
 	val today = DateTimeHelpers.getDate
 
-	def currentRPM = (WebTrack where (_.timestamp after DateTimeHelpers.getDate.minusMinutes(1)) count())
+	def currentRPM = try {
+		WebTrack where (_.timestamp after DateTimeHelpers.getDate.minusMinutes(1)) count()
+	} catch { case _ => 0 }
 
-	def viewsToday = {
+	def viewsToday = try {
 		val yesterday = today.minusDays(1)
 		WebTrack where (_.timestamp after yesterday) count()
-	}
+	} catch { case _ => 0 }
 
-	def viewsYesterday = {
+	def viewsYesterday = try {
 		val yesterday = today.minusDays(1)
 		val before = today.minusDays(2)
 		WebTrack where (_.timestamp after yesterday) and (_.timestamp before before) count()
-	}
+	} catch { case _ => 0 }
 
-	def viewsWeek = {
+	def viewsWeek = try {
 		val week = today.minusWeeks(1)
 		WebTrack where (_.timestamp after week) count()
-	}
+	} catch { case _ => 0 }
 
-	def viewsTotal = {
+	def viewsTotal = try {
 		WebTrack count()
-	}
+	} catch { case _ => 0 }
 
+	def currentVisitors = try {
+		WebSession where (_.lastVisit after DateTimeHelpers.getDate.minusMinutes(10)) count()
+	} catch { case _ => 0 }
 
-	def currentVisitors = (WebSession where (_.lastVisit after DateTimeHelpers.getDate.minusMinutes(10)) count())
-
-	def visitorsToday = {
+	def visitorsToday = try {
 		val yesterday = today.minusDays(1)
 		WebSession where (_.lastVisit after yesterday) count()
-	}
+	} catch { case _ => 0 }
 
-	def visitorsYesterday = {
+	def visitorsYesterday = try {
 		val yesterday = today.minusDays(1)
 		val before = today.minusDays(2)
 		WebSession where (_.lastVisit after yesterday) and (_.lastVisit before before) count()
-	}
+	} catch { case _ => 0 }
 
-	def visitorsWeek = {
+	def visitorsWeek = try {
 		val week = today.minusWeeks(1)
 		WebSession where (_.lastVisit after week) count()
-	}
+	} catch { case _ => 0 }
 
-	def visitorsTotal = WebSession count()
+	def visitorsTotal = try {
+		WebSession count()
+	} catch { case _ => 0 }
 	
 }
 

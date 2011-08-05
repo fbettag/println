@@ -56,17 +56,25 @@ class Tag extends LongKeyedMapper[Tag] with IdPK with ManyToMany {
 		override def dbNotNull_? = true
 	}
 
+	object slug extends MappedString(this, 60) {
+		override def dbIndexed_? = true
+		override def dbNotNull_? = true
+		override def validations = valUnique("Slug must be unique!") _ :: super.validations
+	}
+
 	object twitter extends MappedString(this, 30)
-	
 	object priority extends MappedInt(this)
 
-	// private val postsMMTMopts =  User.currentUser match {
-	// 	case Full(u: User) => List(OrderBy(Post.publishDate, Ascending))
-	// 	case _ => List(By(Post.published, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Ascending))
-	// }
-
-	object posts extends MappedManyToMany(PostTags, PostTags.tag, PostTags.post, Post) // FIXME only show published posts (postsMMTMopts)
+	object posts extends MappedManyToMany(PostTags, PostTags.tag, PostTags.post, Post)
 	
+	def userPosts = posts.all.sort((e1, e2) => (e1.publishDate.is compareTo e2.publishDate.is) > 0)
+	def publicPosts = userPosts.filter(p => ! (p.published && (p.publishDate compareTo new Date) > 0))
+
+	def listPosts = User.currentUser match {
+		case Full(u: User) => userPosts
+		case _ => publicPosts
+	}
+
 }
 
 object Tag extends Tag with LongKeyedMetaMapper[Tag] {
@@ -85,9 +93,16 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 	    override def defaultValue = "New Blog Post"
 	}
 
-	object slug extends MappedStringIndex(this, 128) with LifecycleCallbacks {
-		override def writePermission_? = true
-		override def beforeSave() {super.beforeSave; this.set(this.replaceAll("[^a-zA-Z0-9,/-]+", "-").replaceAll("-+", "-"))}
+	object slug extends MappedString(this, 128) {
+		override def dbIndexed_? = true
+		override def dbNotNull_? = true
+		override def validations = valUnique("Slug must be unique!") _ :: checkForPreoccupiedSlugs _ :: super.validations
+
+		def checkForPreoccupiedSlugs(s: String) = {
+			if (s.matches("^(post/?|stats/?|users(/.*)?|tag(/.*)?)$"))
+				List(FieldError(this, "You cannot use a pre-defined slug."))
+			else List[FieldError]()		
+		}
 	}
 
 	object format extends MappedString(this, 20) {
@@ -151,8 +166,10 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 		try {
 			XML.loadString("<span>" + HtmlHelpers.filter(this.teaserCache.is) + "</span>")
 		} catch {
-			case _ if (User.currentUser != Empty && this.teaserCache.is == "") => <p/>
-			case _ if (User.currentUser != Empty) => <p>Malformed teaser-body could not be parsed.</p>
+			case _ if (User.currentUser != Empty) => this.teaserCache match {
+				case _ if (this.teaserCache.is == null || this.teaserCache.is.matches("^(\\s*(\\r|\\n|\\r\\n)\\s*)$")) => <p/>
+				case _ => <p>Malformed teaser-body could not be parsed.</p>
+			}
 			case _ => NodeSeq.Empty
 		}
 	
@@ -160,10 +177,26 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 		try {
 			XML.loadString("<span>" + HtmlHelpers.filter(this.contentCache.is) + "</span>")
 		} catch {
-			case _ if (User.currentUser != Empty && this.contentCache.is == "") => <p/>
-			case _ if (User.currentUser != Empty) => <p>Malformed content-body could not be parsed.</p>
+			case _ if (User.currentUser != Empty) => this.contentCache match {
+				case _ if (this.contentCache.is == null || this.contentCache.is.matches("^(\\s*(\\r|\\n|\\r\\n)\\s*)$")) => <p/>
+				case _ => <p>Malformed content-body could not be parsed.</p>
+			}
 			case _ => NodeSeq.Empty
 		}
+
+	// def teaserText = getCached(this.teaserCache)
+	// def contentText = getCached(this.contentCache)
+	// 
+	// private def getCached(a: MappedString[this]): NodeSeq =
+	// 	try {
+	// 		XML.loadString("<span>" + HtmlHelpers.filter(a.is) + "</span>")
+	// 	} catch {
+	// 		case _ if (User.currentUser != Empty) => a match {
+	// 			case _ if (a.is == null || a.is.matches("^(\\s*(\\r|\\n|\\r\\n)\\s*)$")) => <p/>
+	// 			case _ => <p>Malformed body could not be parsed.</p>
+	// 		}
+	// 		case _ => NodeSeq.Empty
+	// 	}
 
 }
 
@@ -171,8 +204,10 @@ object Post extends Post with LongKeyedMetaMapper[Post] {
 	override def dbTableName = "posts"
 
 	def all = User.currentUser match {
-		case Full(u: User) => Post.findAll(OrderBy(Post.publishDate, Ascending))
-		case _ => Post.findAll(By(Post.published, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Ascending))
+		case Full(u: User) =>
+			Post.findAll(By(Post.published, false), OrderBy(Post.createdAt, Descending)) ++
+			Post.findAll(By(Post.published, true), OrderBy(Post.publishDate, Descending))
+		case _ => Post.findAll(By(Post.published, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Descending))
 	}
 
 	def one(nameOrId: String) = User.currentUser match {
@@ -192,7 +227,7 @@ object Post extends Post with LongKeyedMetaMapper[Post] {
 }
 
 
-class PostTags extends Mapper[PostTags] {
+class PostTags extends LongKeyedMapper[PostTags] with IdPK  {
   def getSingleton = PostTags
 
   object post extends LongMappedMapper(this, Post)
@@ -200,7 +235,7 @@ class PostTags extends Mapper[PostTags] {
 }
 
 
-object PostTags extends PostTags with MetaMapper[PostTags] {
+object PostTags extends PostTags with LongKeyedMetaMapper[PostTags]  {
 	override def dbTableName = "post_tags"
 
 }

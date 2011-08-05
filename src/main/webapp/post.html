@@ -1,5 +1,9 @@
 <article id="main" role="main" class="lift:surround?with=default;at=main">
 
+	<head_merge>
+		<title class="lift:Posts.title"></title>
+	</head_merge>
+
 	<span class="println_entry_content">
 
 		<!-- admin -->
@@ -65,22 +69,24 @@
 							</fieldset>
 						</form>
 					</div>
-				</span>		
+				</span>	
 			</div>
 
-			<a href="javascript:println.window.toggle('#println-admin');">Edit this Post</a>
-			or <a href="#" class="println_entry_delete">delete this Post</a>
+			<a href="#" onclick="javascript:println.window.toggle(); return false;">Edit this Post</a>
+			or <a class="lift:Posts.delete"></a>
 			
 		</span>
 		<!-- admin end -->
 		
-		<h1><a class="println_entry_link" href="#">My new Blogpost</a></h1>
-		<span id="println_entry_body"></span>
-		<footer>
-			<span class="println_post_footer">
-				Published on <time datetime="2011-07-04T00:00:00+00:00" pubdate>07 July 2011</time>
-			</span>
-		</footer>
+		<span class="lift:Posts.found">
+				<h1><a class="println_entry_link" href="#">My new Blogpost</a></h1>
+				<span id="println_entry_body"></span>
+				<footer>
+					<span class="println_post_footer">
+						Published on <time datetime="2011-07-04T00:00:00+00:00" pubdate>07 July 2011</time>
+					</span>
+			</footer>
+		</span>
 
 	</span>
 	<!-- either here or in templates-hidden/default.html (or both) -->

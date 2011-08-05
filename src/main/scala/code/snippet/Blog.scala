@@ -73,12 +73,13 @@ class Blog extends Loggable {
 		else
 			"li *" #> Post.all.map(p =>
 				"article [id]" #>							"post_%s".format(p.id) &
-				".println_entry_link [href]" #>			p.link &
-				".println_entry_link *" #>				p.name &
-				".println_entry_teaser_link [href]" #>	p.link &
+				".println_entry_link [href]" #>				p.link &
+				".println_entry_link *" #>					p.name &
+				".println_entry_teaser_link [href]" #>		p.link &
 				".println_entry_teaser_link *" #>			p.teaserLink &
-				".println_post_footer *" #>				DateTimeHelpers.postFooter(p) &
-				".println_post_footer [id]" #>			"println_entry_footer_%s".format(p.id) &
+				".println_post_footer *" #>					DateTimeHelpers.postFooter(p) &
+				".println_post_footer [id]" #>				"println_entry_footer_%s".format(p.id) &
 				".println_entry_teaser *" #>				p.teaserText)
 
 }
+

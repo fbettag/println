@@ -46,35 +46,32 @@ import scala.xml._
 import scala.collection.immutable.TreeMap
 
 import code.model._
-
+import code.snippet._
 
 
 object XhtmlTemplateResponse extends HeaderDefaults {
-	
-	def apply(nodeToRender: NodeSeq, statusCode: Int): LiftResponse = {
-		val renderedNode = {
-			val forceToRoot: LiftRules.RewritePF = { case _ => RewriteResponse(Req.parsePath("/"), TreeMap.empty, true) }
-			for (req <- S.request; session <- S.session) yield
-			S.init(Req(req, forceToRoot::Nil), session) {
-				session.processSurroundAndInclude("/", nodeToRender)
-			}
-		} openOr {
-			error("No session")
+	def apply(path: ParsePath, statusCode: Int): LiftResponse = {
+		(for {
+			session <- S.session
+			template =  Templates(path.partPath)
+			resp <- session.processTemplate(template, S.request.open_!, path, statusCode)
+		} yield resp) match {
+			case Full(resp) => resp
+			case _ => XhtmlNotFoundResponse()
 		}
-		new XhtmlResponse(Group(renderedNode), Empty, headers, cookies, statusCode, false)
-
 	}
+}
+
+
+object XhtmlNotFoundResponse extends HeaderDefaults {
+	def apply() = XhtmlTemplateResponse(ParsePath("404" :: Nil, "html", false, false), 404)
 }
 
 
 class Boot {
 	def boot {
-		val srvr = new ServerAddress(Props.get("mo.host") openOr "127.0.0.1", Props.get("mo.port").openOr("27017").toInt)
-		val mo = new MongoOptions
-		mo.socketTimeout = 10
-
-		MongoDB.defineDb(DefaultMongoIdentifier, new Mongo(srvr, mo), "printlndemo")
 		
+		val useMongoDB_? = false
 		
 		if (!DB.jndiJdbcConnAvailable_?) {
 			val vendor = new StandardDBVendor(
@@ -89,16 +86,26 @@ class Boot {
 
 		Schemifier.schemify(true, Schemifier.infoF _, User, Post, Tag, PostTags)
 
+		
+		if (useMongoDB_?) {
+			val srvr = new ServerAddress(Props.get("mo.host") openOr "127.0.0.1", Props.get("mo.port").openOr("27017").toInt)
+			val mo = new MongoOptions
+			mo.socketTimeout = 10
+			MongoDB.defineDb(DefaultMongoIdentifier, new Mongo(srvr, mo), "printlndemo")	
+		}
+
 		// where to search snippet
 		LiftRules.addToPackages("code")
 
 		val redirectUnlessUser = If(() => User.loggedIn_?, () => RedirectResponse("/"))
 		val redirectUnlessAdmin = If(() => User.isAdmin_?, () => RedirectResponse("/"))
+		val redirectUnlessMongo = If(() => useMongoDB_?, () => RedirectResponse("/"))
 
 		// Build SiteMap
 		def sitemap = SiteMap(
+			Menu.i("New Post") / "post" >> redirectUnlessAdmin,
 			Menu.i("Posts") / "index",
-			Menu.i("Statistics") / "admin" / "stats" >> redirectUnlessUser,
+			Menu.i("Statistics") / "admin" / "stats" >> redirectUnlessUser >> redirectUnlessMongo,
 			Menu.i("Users") / "admin" / "users" >> redirectUnlessAdmin >> User.AddUserMenusAfter
 		)
 
@@ -142,8 +149,6 @@ class Boot {
 		def renderTemplate(what: String) =
 			S.render(<lift:embed what={what} />, S.request.get.request).first
 
-		lazy val notFoundResponse = NotFoundAsResponse(XhtmlTemplateResponse(<lift:embed what="404" />, 404))
-
 		LiftRules.passNotFoundToChain = false 
 		LiftRules.uriNotFound.prepend {
 			case _ => S.request match {
@@ -153,29 +158,19 @@ class Boot {
 
 					case _ if (req.uri.matches("/sitemap(\\.xml)?")) =>
 						NotFoundAsResponse(XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8"))
+					
+					case _ if (req.uri.matches("^/tag/.+$") && Tag.findAll(By(Tag.slug, req.uri.replaceFirst("^/tag/", ""))).length != 0) =>
+						NotFoundAsResponse(XhtmlTemplateResponse(ParsePath("tag" :: Nil, "html", false, false), 200))
 
 					case _ if (Post.one(req.uri.replaceFirst("^/", "")) != Empty) =>
-						NotFoundAsResponse(XhtmlTemplateResponse(<lift:embed what="post" />, 200))
+						NotFoundAsResponse(XhtmlTemplateResponse(ParsePath("post" :: Nil, "html", false, false), 200))
 
-					case _ => notFoundResponse
+					case _ => NotFoundAsResponse(XhtmlNotFoundResponse())
 				}
-				case _ => notFoundResponse
+				case _ => NotFoundAsResponse(XhtmlNotFoundResponse())
 			}
 		}
 
-		// LiftRules.uriNotFound.prepend(NamedPF("404Handler") {
-		// 	case (req, failure) if (req.uri.matches("/atom(\\.xml)?")) =>
-		// 		NotFoundAsResponse(AtomResponse(renderTemplate("atom")))
-		// 
-		// 	case (req, failure) if (req.uri.matches("/sitemap(\\.xml)?")) =>
-		// 		NotFoundAsResponse(XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8"))
-		// 
-		// 	case (req, failure) if (Post.one(req.uri.replaceFirst("^/", "")) != Empty) =>
-		// 		NotFoundAsResponse(XhtmlTemplateResponse(<lift:embed what="post" />, 200))
-		// 
-		// 	case _ =>
-		// 		NotFoundAsResponse(XhtmlTemplateResponse(<lift:embed what="404" />, 404))
-		// })
 	}
 }
 
