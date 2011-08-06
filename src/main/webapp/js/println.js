@@ -239,12 +239,14 @@ $(document).ready(function() {
 			"helpHoverTitle": "Markdown Help"
 		});
 
-		$("#println-admin-txtc").wmd({
-			"preview": "println_entry_body",
-			"saveTo": "println-admin-txtc-cached",
-			"helpLink": "http://daringfireball.net/projects/markdown/syntax",
-			"helpHoverTitle": "Markdown Help"
-		});
+		window.setTimeout(function() {
+			$("#println-admin-txtc").wmd({
+				"preview": "println_entry_body",
+				"saveTo": "println-admin-txtc-cached",
+				"helpLink": "http://daringfireball.net/projects/markdown/syntax",
+				"helpHoverTitle": "Markdown Help"
+			});
+		}, 200);
 	});
 
 
