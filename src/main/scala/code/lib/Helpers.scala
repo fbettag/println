@@ -53,7 +53,10 @@ import code.model._
 object PrintlnMongo {
 	
 	lazy val enabled_? = Props.get("mo.host") match {
-		case Full(a: String) => true
+		case Full(a: String) => Props.get("mo.db") match {
+			case Full(b: String) => true
+			case _ => false
+		}
 		case _ => false
 	}
 

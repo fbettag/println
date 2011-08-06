@@ -90,7 +90,7 @@ class Boot {
 			val srvr = new ServerAddress(Props.get("mo.host") openOr "127.0.0.1", Props.get("mo.port").openOr("27017").toInt)
 			val mo = new MongoOptions
 			mo.socketTimeout = 10
-			MongoDB.defineDb(DefaultMongoIdentifier, new Mongo(srvr, mo), "printlndemo")	
+			MongoDB.defineDb(DefaultMongoIdentifier, new Mongo(srvr, mo), Props.get("mo.db") openOr "printlndemo")
 		}
 
 		// where to search snippet
