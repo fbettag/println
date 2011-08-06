@@ -222,6 +222,13 @@ object Post extends Post with LongKeyedMetaMapper[Post] {
 		case _ => Post.findAll(By(Post.published, true), By(Post.publishInStream, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Descending))
 	}
 
+	def sitemap = User.currentUser match {
+		case Full(u: User) =>
+			Post.findAll(By(Post.published, false), OrderBy(Post.createdAt, Descending)) ++
+			Post.findAll(By(Post.published, true), OrderBy(Post.publishDate, Descending))
+		case _ => Post.findAll(By(Post.published, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Descending))
+	}
+
 	def one(nameOrId: String) = User.currentUser match {
 		case Full(u: User) =>
 			Post.find(By(Post.slug, nameOrId)) match {

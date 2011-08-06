@@ -66,7 +66,7 @@ class Sitemap extends Loggable {
 		"lastmod *" #>			Post.lastmod.toString("yyyy-MM-dd'T'HH:mm:ss.SSSZZ") // manual to avoid errors!
 
 	def list: CssSel =
-		"url *" #> (Post.create.name("Home").slug("") :: Post.all).map(p =>
+		"url *" #> (Post.create.name("Home").slug("") :: Post.sitemap).map(p =>
 			"loc *" #>			"http://%s/%s".format(S.hostName, p.slug) &
 			"lastmod *" #>		p.publishDate.toISOString)
 
