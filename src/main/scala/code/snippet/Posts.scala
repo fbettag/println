@@ -69,7 +69,7 @@ class Posts extends Loggable {
 		JsRaw("$('.println_entry_link').html('%s')".format(n.replaceAll("'", "\\'"))).cmd	
 	
 	def saveSlug(p: Post, n: String): JsCmd =
-		if (p.slug(HtmlHelpers.slugify(n)).validate.length == 0 && p.save) 
+		if (p.slug(n).validate.length == 0 && p.save)
 			RedirectTo("/%s".format(p.slug))
 		else
 			JsFx.failed(".println_post_slug") &
@@ -137,7 +137,7 @@ class Posts extends Loggable {
 			} catch {
 				case _ => Tag.find(By(Tag.name, t)) match {
 					case Full(tag: Tag) => tag
-					case _ => { val btag = Tag.create.name(t).slug(HtmlHelpers.slugify(t)); btag.save; btag }
+					case _ => { val btag = Tag.create.name(t).slug(t); btag.save; btag }
 				}
 			}
 
@@ -215,7 +215,7 @@ class Posts extends Loggable {
 
 	def add = {
 		def addPost(n: String) = {
-			val p = Post.create.name(n).slug(HtmlHelpers.slugify(n))
+			val p = Post.create.name(n).slug(n)
 			if (p.validate.length == 0 && p.save)
 				RedirectTo("/%s".format(p.slug))
 			else

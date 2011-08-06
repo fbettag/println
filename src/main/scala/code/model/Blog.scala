@@ -60,6 +60,7 @@ class Tag extends LongKeyedMapper[Tag] with IdPK with ManyToMany {
 		override def dbIndexed_? = true
 		override def dbNotNull_? = true
 		override def validations = valUnique("Slug must be unique!") _ :: super.validations
+		override def setFilter = trim _ :: toLower _ :: HtmlHelpers.slugify _ :: super.setFilter
 	}
 
 	object twitter extends MappedString(this, 30)
@@ -96,9 +97,10 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 	object slug extends MappedString(this, 128) {
 		override def dbIndexed_? = true
 		override def dbNotNull_? = true
-		override def validations = valUnique("Slug must be unique!") _ :: checkForPreoccupiedSlugs _ :: super.validations
+		override def validations = valUnique("Slug must be unique!") _ :: preoccupiedSlugs _ :: super.validations
+		override def setFilter = trim _ :: HtmlHelpers.slugify _ :: super.setFilter
 
-		def checkForPreoccupiedSlugs(s: String) = {
+		def preoccupiedSlugs(s: String) = {
 			if (s.matches("^(post/?|stats/?|users(/.*)?|tag(/.*)?)$"))
 				List(FieldError(this, "You cannot use a pre-defined slug."))
 			else List[FieldError]()		
