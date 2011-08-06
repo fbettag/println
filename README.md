@@ -31,11 +31,13 @@ Another caveat is, that JavaScript is not rendered in the Live-Preview (but prop
 
 The main layout is in src/main/webapp/template-hidden/default.html and has all the widgets that are currently implemented. Here is the overview:
 
-* BitPit: ```<span class="lift:Helpers.bitpit?id=7019"/>```
-* Twitter: ```<span class="lift:Helpers.twitter?user=fbettag"/>```
-* Google Analytics: ```<span class="lift:Helpers.analytics?ua="/>```
+* BitPit: ```<span class="lift:Helpers.bitpit?id=7019"></span>```
+* Twitter: ```<span class="lift:Helpers.twitter?user=fbettag"></span>```
+* Google Analytics: ```<span class="lift:Helpers.analytics?ua="></span>```
 * Tag-Cloud: ```<span class="lift:Tags.cloud"></span>```
 * Copyright Helper: ```&copy; <span class="lift:Helpers.years?since=2010"></span>```
+* Social Bookmarks: ```<div class="lift:embed?what=_social"></div>```
+* Disqus: ```<div class="lift:Helpers.disqus?name=my.new.blog"></div>```
 
 If you want to implement your own, feel free to look at src/main/scala/code/snippets/Helpers.scala for how to do so.
 
