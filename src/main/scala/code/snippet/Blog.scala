@@ -67,6 +67,8 @@ class Blog extends Loggable {
 	def step1login(xhtml: NodeSeq) = if (!User.isLoggedIn_? && User.count() > 0 && publicPostCount == 0) xhtml else NodeSeq.Empty
 	def step2(xhtml: NodeSeq) = if (User.isLoggedIn_? && Post.count() == 0) xhtml else NodeSeq.Empty
 
+	def title: NodeSeq = <title>{HtmlHelpers.title}</title>
+
 	def articles: CssSel =
 		if (Post.count() == 0)
 			"section" #> ""

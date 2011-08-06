@@ -68,7 +68,7 @@ class Tags extends Loggable {
 
 	/* snippets */
 	def name = Text(tag.name)
-	def title = <title>{HtmlHelpers.title(tag.name)}</title>
+	def title = <title>{HtmlHelpers.subtitle(tag.name)}</title>
 
 	def articles: CssSel =
 		"li *" #> tag.listPosts.map(p =>

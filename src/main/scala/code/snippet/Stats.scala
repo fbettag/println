@@ -74,7 +74,7 @@ class Stats extends Loggable {
 	
 
 	/* snippets */
-	def title = <title>{HtmlHelpers.title("Statistics")}</title>
+	def title = <title>{HtmlHelpers.subtitle("Statistics")}</title>
 	
 	def track = {
 		if (PrintlnMongo.enabled_?) {

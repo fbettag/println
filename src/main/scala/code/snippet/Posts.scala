@@ -169,7 +169,7 @@ class Posts extends Loggable {
 
 
 	/* snippets */
-	def title = <title>{HtmlHelpers.title(post.name)}</title>
+	def title = <title>{HtmlHelpers.subtitle(post.name)}</title>
 
 	def found: CssSel =
 		".println_entry_link [href]" #>	post.link &

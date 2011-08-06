@@ -136,11 +136,12 @@ object HtmlHelpers {
         replaceAll("-+", "-").
         replaceAll("(^\\-*|\\-*$)", "")
 
-	def title(title: String) =
-		Props.get("title") match {
-			case Full(t: String) => "%s: %s".format(t, title)
-			case _ => title
-		}
+	def title: String = Props.get("title") match {
+		case Full(t: String) => t
+		case _ => "println blogging software"
+	}
+
+	def subtitle(t: String) = "%s: %s".format(title, t)
 
 }
 
