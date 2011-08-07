@@ -6,7 +6,7 @@ It is heavily inspired by [Nesta CMS](http://nestacms.com/) a Ruby based CMS Sof
 
 All my websites ([Bettag Systems UG](http://www.bett.ag) and [uberblogs](http://uberblo.gs/)) currently run println.
 
-There will also be a screencast in the future.
+There also is a [Demo site](http://demo.println.io). Screencast will follow.
 
 
 ## Features
