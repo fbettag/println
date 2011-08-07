@@ -4,7 +4,9 @@
 
 It is heavily inspired by [Nesta CMS](http://nestacms.com/) a Ruby based CMS Software and also uses parts of its default layout (since i like it for its simplicity).
 
-The official website is currently being done with println itself, please be patient as it will be well-done. There will also be a webcast soon.
+All my websites ([Bettag Systems UG](http://www.bett.ag) and [uberblogs](http://uberblo.gs/)) currently run println.
+
+There will also be a screencast in the future.
 
 
 ## Features

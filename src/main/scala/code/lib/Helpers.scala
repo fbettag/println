@@ -125,19 +125,19 @@ object HtmlHelpers {
 	def slugify(a: String) =
 		a.replaceAll(" ", "-").
 		replaceAll("%E2%82%AC", "euro").
-        replaceAll("%C3%84", "ae").
-        replaceAll("%C3%A4", "ae").
-        replaceAll("%C3%96", "oe").
-        replaceAll("%C3%B6", "oe").
-        replaceAll("%C3%9C", "ue").
-        replaceAll("%C3%BC", "ue").
-        replaceAll("%C3%9F", "ss").
-        replaceAll("%26", "und").
-        replaceAll("@", "-at-").
-        replaceAll("[^a-zA-Z0-9/]+", "-").
-        replaceAll("/+", "/").
-        replaceAll("-+", "-").
-        replaceAll("(^\\-*|\\-*$)", "")
+		replaceAll("%C3%84", "ae").
+		replaceAll("%C3%A4", "ae").
+		replaceAll("%C3%96", "oe").
+		replaceAll("%C3%B6", "oe").
+		replaceAll("%C3%9C", "ue").
+		replaceAll("%C3%BC", "ue").
+		replaceAll("%C3%9F", "ss").
+		replaceAll("%26", "und").
+		replaceAll("@", "-at-").
+		replaceAll("[^a-zA-Z0-9/]+", "-").
+		replaceAll("/+", "/").
+		replaceAll("-+", "-").
+		replaceAll("(^\\-*|\\-*$)", "")
 
 	def title: String = Props.get("title") match {
 		case Full(t: String) => t
