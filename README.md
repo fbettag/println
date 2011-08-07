@@ -92,11 +92,6 @@ MongoDB is solely used for statistical analysis like Browser-, Referer- or Targe
 If you want to try it without MongoDB, feel free to do so. Just make sure you unset/comment "mo.host" in your .props-files.
 
 
-## Page title
-
-Instead of writing stupid SQL-Queries to get the default pagetitle, the pagetitle is defined in the properties files (default.props, production.default.props). IMHO this is a performance-saver as well as practiable.. How often do you change your main-site title?
-
-
 ## Tracking atom.xml and sitemap.xml
 
 Simply place the following in one or both of the files (not in any of the repeated sections of course):
@@ -104,6 +99,10 @@ Simply place the following in one or both of the files (not in any of the repeat
 ```
 <lift:Stats.track/>
 ```
+
+## Page title
+
+Instead of writing stupid SQL-Queries to get the default pagetitle, the pagetitle is defined in the properties files (default.props, production.default.props). IMHO this is a performance-saver as well as practiable.. How often do you change your main-site title?
 
 
 ## Remarks
