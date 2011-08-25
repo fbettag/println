@@ -125,6 +125,7 @@ Thanks to everybody in the Lift Community and on [Liftweb Google Groups](http://
 
 ## License
 
+```
   Copyright (c) 2011, Franz Bettag <franz@bett.ag>
   All rights reserved.
 
@@ -150,6 +151,5 @@ Thanks to everybody in the Lift Community and on [Liftweb Google Groups](http://
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
+```
 
