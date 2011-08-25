@@ -98,7 +98,7 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 		override def dbIndexed_? = true
 		override def dbNotNull_? = true
 		override def validations = valUnique("Slug must be unique!") _ :: preoccupiedSlugs _ :: super.validations
-		override def setFilter = trim _ :: HtmlHelpers.slugify _ :: super.setFilter
+		override def setFilter = trim _ :: toLower _ :: HtmlHelpers.slugify _ :: super.setFilter
 
 		def preoccupiedSlugs(s: String) = {
 			if (s.matches("^(post/?|stats/?|users(/.*)?|tag(/.*)?)$"))
