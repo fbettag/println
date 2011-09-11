@@ -40,8 +40,8 @@ println.state.cookie = { expires: 3650, path: '/' };
  * Tags
  */
 println.tags = {};
-println.tags.add = function(item) {}
-println.tags.delete = function(item) {}
+println.tags.add = function(item) {};
+println.tags.remove = function(item) {};
 
 /**
  * Upload
@@ -136,10 +136,9 @@ println.upload.progress = function(uuid, cb) {
 println.post = {};
 
 println.post.add = function() {};
-println.post.new = function() {
+println.post.create = function() {
 	$('#new-post').dialog("open");
 	$('#new-post-input').select();
-	return false;
 };
 
 
@@ -255,7 +254,7 @@ $(document).ready(function() {
 			filter_selected: true,
 			addontab: true,
 			onselect: println.tags.add,
-			onremove: println.tags.delete,
+			onremove: println.tags.remove,
 			newel: true
 		});
 	});

@@ -9,4 +9,7 @@ db.password=
 
 #upload.path=/tmp/println-content
 
+smtp.host=localhost
+smtp.from=noreply@i.didnt.configure.jack.shit
+
 title=println blogging software

@@ -85,6 +85,8 @@ class Boot {
 
 		Schemifier.schemify(true, Schemifier.infoF _, User, Post, Tag, PostTags)
 
+		System.setProperty("mail.smtp.host", Props.get("smtp.host") openOr "localhost")
+		System.setProperty("mail.smtp.from", Props.get("smtp.from") openOr "noreply@i.didnt.configure.jack.shit")
 		
 		if (PrintlnMongo.enabled_?) {
 			val srvr = new ServerAddress(Props.get("mo.host") openOr "127.0.0.1", Props.get("mo.port").openOr("27017").toInt)
