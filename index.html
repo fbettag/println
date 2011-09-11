@@ -143,23 +143,18 @@ src/main/resources/props/production.default.props (Production - copy from dev)</
 
 	<p><strong>If you want your production. and pilot.default.props in your repository, make sure you uncomment the line in .gitingore!</strong></p>
 
-	<p><strong>Only set pool.calculate=true in Production! (production.default.props)</strong></p>
-
 	<p>SMTP Setup is straight forward. Either you have your SMTP Host on localhost, or you have a remote-host which lets you relay. In Postfix this can be easily done with my_networks.</p>
 
 	<p><strong>Whenever you're done making changes, make sure you commit! Otherwise rebase won't work and you will encounter other problems like backing up.</strong></p>
 
-	<p>Update dependencies with sbt:</p>
-	<pre>./sbt update</pre>
-
 	<p>Run in development-mode:</p>
-	<pre>./sbt ~jetty-run</pre>
+	<pre>mvn jetty:run</pre>
 
 
 	<h2>Production</h2>
 
 	<p>Deploy for production:</p>
-	<pre>./sbt package-war</pre>
+	<pre>mvn package</pre>
 
 	<p>Download <a href="https://github.com/dpp/lift-samples/blob/master/jetty_instance.tgz" target="_blank">David Pollak's jetty_instance.tgz</a> and do the following:</p>
 <pre>tar -jxf jetty_instance.tgz
