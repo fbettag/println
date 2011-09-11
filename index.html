@@ -1,85 +1,261 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset='utf-8'>
+	<meta charset='utf-8'>
 
-  <title>fbettag/println @ GitHub</title>
+	<title>fbettag/println @ GitHub</title>
 
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #efa372;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #000000;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #105c8d; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #105c8d; }
-    h3 { text-align: center; color: #105c8d; }
-    a { color: #105c8d; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
+	<style type="text/css">
+		body {
+			margin-top: 1.0em;
+			background-color: #5daff5;
+			font-family: Helvetica, Arial, FreeSans, san-serif;
+			color: #000000;
+		}
+		#container {
+			margin: 0 auto;
+			width: 700px;
+		}
+		h1 { font-size: 3.8em; color: #a2500a; margin-bottom: 3px; }
+		h1 .small { font-size: 0.4em; }
+		h1 a { text-decoration: none }
+		h2 { font-size: 1.5em; color: #a2500a; }
+		h3 { text-align: center; color: #a2500a; }
+		a { color: #a2500a; }
+		pre { background: #000; color: #fff; padding: 15px;}
+		hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+		.footer { text-align:center; padding-top:30px; font-style: italic; }
+		.description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+		.download { float: right; }
+	</style>
 </head>
 
 <body>
-  <a href="http://github.com/fbettag/println"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+	<a href="http://github.com/fbettag/println"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
 
-  <div id="container">
+	<div id="container">
 
-    <div class="download">
-      <a href="http://github.com/fbettag/println/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/fbettag/println/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
-    </div>
+	<div class="download">
+		<a href="http://github.com/fbettag/println/zipball/master">
+		<img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
+		<a href="http://github.com/fbettag/println/tarball/master">
+		<img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
+	</div>
 
-    <h1><a href="http://github.com/fbettag/println">println</a>
-      <span class="small">by <a href="http://github.com/fbettag">fbettag</a></span></h1>
+	<h1><a href="http://github.com/fbettag/println">println</a> <span class="small">by <a href="http://github.com/fbettag">fbettag</a></span></h1>
 
-    <div class="description">
-      blogging / publishing software written in Scala (Lift Web Framework)
-    </div>
+	<div class="description">
+		<p><a href="http://println.io">println</a> is a blogging / publishing software written in <a href="http://www.scala-lang.org">Scala</a> with the <a href="http://www.liftweb.net">Lift Web Framework</a>. It tries to fulfill the need for an un-obustrive approach of writing, publishing and managing ones blog posts with it's overlay-editor-window.</p>
 
-    <h2>Authors</h2>
-<p>Franz Bettag (franz@bett.ag)<br/><br/>      </p>
-<h2>Contact</h2>
-<p>Franz Bettag (franz@bett.ag)<br/>      </p>
+		<p>It is heavily inspired by <a href="http://nestacms.com/">Nesta CMS</a> a Ruby based CMS Software and also uses parts of its default layout (since i like it for its simplicity).</p>
+
+		<p>All my websites (<a href="http://www.bett.ag">Bettag Systems UG</a> and <a href="http://uberblo.gs/">uberblogs</a>) currently run println.</p>
+
+		<p>There also is a <a href="http://demo.println.io">Demo site</a>. Screencast will follow.</p>
+	</div>
+
+	<h2>Features</h2>
+	<ul>
+		<li>High Performance (thanks to Lift and Scala)</li>
+		<li>Easy to use (thanks to me)</li>
+		<li>Easy to write (Live-Preview of your Markdown or Plaintext)</li>
+		<li>Easy to customize (by default only layout or css changes are needed)</li>
+		<li>Easy to deploy (.war Archive)</li>
+		<li>Internal web-tracking with MongoDB (optional)</li>
+		<li>Lots of widgets by default (see next section)</li>
+		<li>Atom-Feed (/atom.xml)</li>
+		<li>Google Sitemap (/sitemap.xml)</li>
+		<li>AJAX-/Facebook-Style Tagging with Tag-cloud</li>
+	</ul>
 
 
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/fbettag/println/zipball/master">zip</a> or
-      <a href="http://github.com/fbettag/println/tarball/master">tar</a> formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/fbettag/println</pre>
-    </p>
+	<h2>Caveats</h2>
+	<p>Currently it is text-only. I will implement media-management as soon as possible. For now i suggest storing your images elsewhere (Flickr, Picasa) as they offer better upload-possibilities from mobile devices anyway.</p>
 
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/fbettag/println">fbettag/println</a>
-    </div>
+	<p>Another caveat is, that JavaScript is not rendered in the Live-Preview (but properly on the resulting published page). Meaning that if you enter  into the Live-Editor, it won't show in the Live-Preview, but will be perfectly normal on the website.</p>
 
-  </div>
 
-  <script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-436394-13");
-pageTracker._trackPageview();
-} catch(err) {}</script>
+	<h2>Layout and Widgets</h2>
+	<p>The main layout is in src/main/webapp/template-hidden/default.html and has all the widgets that are currently implemented. Here is the overview:</p>
+
+	<ul>
+		<li>BitPit: <code>&lt;span class="lift:Helpers.bitpit?id=7019"&gt;&lt;/span&gt;</code></li>
+		<li>Twitter: <code>&lt;span class="lift:Helpers.twitter?user=fbettag"&gt;&lt;/span&gt;</code></li>
+		<li>Google Analytics: <code>&lt;span class="lift:Helpers.analytics?ua="&gt;&lt;/span&gt;</code></li>
+		<li>Tag-Cloud: <code>&lt;span class="lift:Tags.cloud"&gt;&lt;/span&gt;</code></li>
+		<li>Copyright Helper: <code>&amp;copy; &lt;span class="lift:Helpers.years?since=2010"&gt;&lt;/span&gt;</code></li>
+		<li>Social Bookmarks: <code>&lt;div class="lift:embed?what=_social"&gt;&lt;/div&gt;</code></li>
+		<li>Disqus: <code>&lt;div class="lift:Helpers.disqus?name=my.new.blog"&gt;&lt;/div&gt;</code></li>
+	</ul>
+
+	<p>If you want to implement your own, feel free to look at src/main/scala/code/snippets/Helpers.scala for how to do so.</p>
+
+
+	<h2>Dependencies</h2>
+	<p>
+		<a href="http://www.postgresql.org">PostgreSQL</a> (or any other JDBC-Driver that Liftweb supports)<br/>
+		<a href="http://www.scala-lang.org">Scala</a><br/>
+		<a href="http://www.mongodb.org">MongoDB</a> (optional for Statistics)
+	</p>
+
+
+	<h2>Download</h2>
+	<p>
+		You can download this project in either
+		<a href="http://github.com/fbettag/println/zipball/master">zip</a> or
+		<a href="http://github.com/fbettag/println/tarball/master">tar</a> formats.
+	</p>
+
+	<p>
+		You can also clone the project with <a href="http://git-scm.com">Git</a> by running:
+		<pre>$ git clone git://github.com/fbettag/println mysite.com</pre>
+	</p>
+
+
+	<h2>Preparing the database (PostgreSQL)</h2>
+	<p>After installing PostgreSQL, run the following in your shell:</p>
+
+<pre>createuser -Upostgres printlndemo
+$ createdb -Upostgres --owner println printlndemo</pre>
+
+
+	<h2>Setup and keeping track of Development</h2>
+
+	<p>Sometimes it can be hard for newcomers to see how git helps you manage this, but here is how i recommend doing it.</p>
+
+<pre>cd mysite.com/
+git branch -t mysite.com		# create your own branch
+git checkout mysite.com			# check it out
+git branch -D master			# delete the local master
+edit templates in src/main/webapp	# edit your templates
+git commit -a -m 'My Layout changes.'	# save your changes</pre>
+
+	<p>Now whenever we publish an update, you simply do:</p>
+	<pre>git rebase origin/master</pre>
+
+	<p>The best thing would be, to push your new branch to a remote repository for backup. To find out more about stuff like that check <a href="http://gitready.com/" target="_blank">gitready.com</a> and sometimes <a href="http://uberblo.gs/tag/git">my blog</a>.</p>
+
+
+	<p>Configure your Project and Database: (use default.props as example)</p>
+<pre>src/main/resources/props/default.props            (Development)
+src/main/resources/props/pilot.default.props      (Preview - copy from dev)
+src/main/resources/props/production.default.props (Production - copy from dev)</pre>
+
+	<p><strong>If you want your production. and pilot.default.props in your repository, make sure you uncomment the line in .gitingore!</strong></p>
+
+	<p><strong>Only set pool.calculate=true in Production! (production.default.props)</strong></p>
+
+	<p>SMTP Setup is straight forward. Either you have your SMTP Host on localhost, or you have a remote-host which lets you relay. In Postfix this can be easily done with my_networks.</p>
+
+	<p><strong>Whenever you're done making changes, make sure you commit! Otherwise rebase won't work amongst other problems like backup..</strong></p>
+
+	<p>Update dependencies with sbt:</p>
+	<pre>./sbt update</pre>
+
+	<p>Run in development-mode:</p>
+	<pre>./sbt ~jetty-run</pre>
+
+
+	<h2>Production</h2>
+
+	<p>Deploy for production:</p>
+	<pre>./sbt package-war</pre>
+
+	<p>Download <a href="https://github.com/dpp/lift-samples/blob/master/jetty_instance.tgz" target="_blank">David Pollak's jetty_instance.tgz</a> and do the following:</p>
+<pre>tar -jxf jetty_instance.tgz
+cd jetty
+echo 9090 > base_port (or whatever your Port should be)
+echo 64M > ram_size (change to appropriate size!)</pre>
+
+	<p>Copy your packaged .war-file to jetty/webapps/root.war and run:</p>
+
+	<pre>./start_prod.sh (and ./shutdown_prod.sh)</pre>
+
+	<p>Point your nginx to the port of the jetty and follow the on-screen instructions.</p>
+
+
+	<h2>Without MongoDB</h2>
+	<p>MongoDB is solely used for statistical analysis like Browser-, Referer- or Target-URL-tracking. This is not fully tested yet, but it has interesting results and more flexibility as opposed to other commercial products.</p>
+
+	<p>If you want to try it without MongoDB, feel free to do so. Just make sure you unset/comment "mo.host" in your .props-files.</p>
+
+
+	<h2>Tracking atom.xml and sitemap.xml</h2>
+	<p>Simply place the following in one or both of the files (not in any of the repeated sections of course):</p>
+
+	<pre><code>&lt;lift:Stats.track/&gt;</code></pre>
+
+
+	<h2>Page title</h2>
+	<p>Instead of writing stupid SQL-Queries to get the default pagetitle, the pagetitle is defined in the properties files (default.props, production.default.props). IMHO this is a performance-saver as well as practiable.. How often do you change your main-site title?</p>
+
+
+	<h2>Remarks</h2>
+	<p>Some of the JavaScript- and Request-Routing-Stuff is <strong>very</strong> hackish, but it also shows the capabilities Lift has to offer or how you can reuse or abuse them.</p>
+
+
+	<h2>Todo</h2>
+	<ul>
+		<li>AutoScroll/Sticky Editor-Window</li>
+		<li>JavaScript-Evaluation in Live-Preview</li>
+		<li>Media Management -&gt; Image-Upload, etc.</li>
+		<li>Twitter, Facebook and Google+ Auto-Publish</li>
+	</ul>
+
+
+	<h2>Thanks</h2>
+	<p>to everybody in the Lift Community and on <a href="http://groups.google.com/group/liftweb" target="_blank">Liftweb Google Groups</a>.</p>
+
+
+	<h2>Author</h2>
+	<p>Franz Bettag (franz@bett.ag)</p>
+
+
+	<h2>License</h2>
+	<p><pre>
+  Copyright (c) 2011, Franz Bettag <franz@bett.ag>
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are met:
+     * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+     * Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+     * All advertising materials mentioning features or use of this software
+       must display the following acknowledgement:
+       This product includes software developed by the Bettag Systems UG
+       and its contributors.
+
+  THIS SOFTWARE IS PROVIDED BY BETTAG SYSTEMS UG ''AS IS'' AND ANY
+  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  DISCLAIMED. IN NO EVENT SHALL BETTAG SYSTEMS UG BE LIABLE FOR ANY
+  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+	  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+	</pre></p>
+
+	<div class="footer">
+		get the source code on GitHub : <a href="http://github.com/fbettag/println">fbettag/println</a>
+	</div>
+
+	</div>
+
+	<script type="text/javascript">
+		var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+		document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">
+		try {
+			var pageTracker = _gat._getTracker("UA-436394-13");
+			pageTracker._trackPageview();
+		} catch(err) {}
+	</script>
 </body>
 </html>
+
