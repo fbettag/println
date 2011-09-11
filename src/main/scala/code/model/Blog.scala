@@ -68,7 +68,16 @@ class Tag extends LongKeyedMapper[Tag] with IdPK with ManyToMany {
 
 	object posts extends MappedManyToMany(PostTags, PostTags.tag, PostTags.post, Post)
 	
-	def userPosts = posts.all.sort((e1, e2) => (e1.publishDate.is compareTo e2.publishDate.is) > 0)
+	def userPosts = {
+		val allposts = posts.all
+		var unpublished = allposts.filter(f => f.publishDate.is == null)
+		var published = allposts.filter(f => f.publishDate.is != null).sort((e1, e2) => (e1.publishDate.is compareTo e2.publishDate.is) > 0)
+
+		User.currentUser match {
+			case Full(u: User) => unpublished ++ published
+			case _ => published
+		}
+	}
 	def publicPosts = userPosts.filter(p => ! (p.published && (p.publishDate compareTo new Date) > 0))
 
 	def listPosts = User.currentUser match {
