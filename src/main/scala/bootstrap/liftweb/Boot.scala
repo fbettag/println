@@ -149,6 +149,10 @@ class Boot {
 			res
 		}
 
+		LiftRules.statelessTest.append {
+			case _ if (!User.loggedIn_?) => true
+		}
+
 		LiftRules.passNotFoundToChain = false 
 		LiftRules.uriNotFound.prepend {
 			case _ => S.request match {
