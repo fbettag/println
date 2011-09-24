@@ -46,27 +46,9 @@ import scala.xml._
 import scala.collection.immutable.TreeMap
 
 import code.lib._
+import code.comet._
 import code.model._
 import code.snippet._
-
-
-object XhtmlTemplateResponse extends HeaderDefaults {
-	def apply(path: ParsePath, statusCode: Int): LiftResponse = {
-		(for {
-			session <- S.session
-			template =  Templates(path.partPath)
-			resp <- session.processTemplate(template, S.request.open_!, path, statusCode)
-		} yield resp) match {
-			case Full(resp) => resp
-			case _ => XhtmlNotFoundResponse()
-		}
-	}
-}
-
-
-object XhtmlNotFoundResponse extends HeaderDefaults {
-	def apply() = XhtmlTemplateResponse(ParsePath("404" :: Nil, "html", false, false), 404)
-}
 
 
 class Boot {
@@ -91,7 +73,7 @@ class Boot {
 		if (PrintlnMongo.enabled_?) {
 			val srvr = new ServerAddress(Props.get("mo.host") openOr "127.0.0.1", Props.get("mo.port").openOr("27017").toInt)
 			val mo = new MongoOptions
-			mo.socketTimeout = 10
+			mo.socketTimeout = 1000
 			MongoDB.defineDb(DefaultMongoIdentifier, new Mongo(srvr, mo), Props.get("mo.db") openOr "printlndemo")
 		}
 
@@ -144,28 +126,46 @@ class Boot {
 			new Html5Properties(r.userAgent))
 
 		// Make a transaction span the whole HTTP request
-		S.addAround(DB.buildLoanWrapper)
+		//S.addAround(DB.buildLoanWrapper)
 
 
 		def renderTemplate(what: String) =
 			S.render(<lift:embed what={what} />, S.request.get.request).first
+		
+		def normalizeURI(a: String) = a.replaceAll("(\\.[xht]+ml)?(\\?.*)?$", "")
+
+		def cachedResponse_?(req: Req): Box[NotFound] = {
+			if (User.loggedIn_?) return Empty
+			CacheActor !! GetResponse(normalizeURI(req.uri)) match {
+				case Full(rep: CachedReply) =>
+					Full(NotFoundAsResponse(rep.resp))
+				case _ => Empty
+			}
+		}
+
+		def cacheResponse(req: Req, res: LiftResponse) = {
+			if (!User.loggedIn_?)
+				CacheActor ! StoreResponse(normalizeURI(req.uri), res)
+			res
+		}
 
 		LiftRules.passNotFoundToChain = false 
 		LiftRules.uriNotFound.prepend {
 			case _ => S.request match {
 				case Full(req: Req) => req match {
+					case _ if (cachedResponse_?(req) != Empty) => cachedResponse_?(req).open_!
 					case _ if (req.uri.matches("/atom(\\.xml)?")) =>
-						NotFoundAsResponse(AtomResponse(renderTemplate("atom")))
-
+						NotFoundAsResponse(cacheResponse(req, AtomResponse(renderTemplate("atom"))))
+		
 					case _ if (req.uri.matches("/sitemap(\\.xml)?")) =>
-						NotFoundAsResponse(XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8"))
-					
+						NotFoundAsResponse(cacheResponse(req, XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8")))
+		
 					case _ if (req.uri.matches("^/tag/.+$") && Tag.findAll(By(Tag.slug, req.uri.replaceFirst("^/tag/", ""))).length != 0) =>
-						NotFoundAsResponse(XhtmlTemplateResponse(ParsePath("tag" :: Nil, "html", false, false), 200))
-
+						NotFoundAsResponse(cacheResponse(req, XhtmlTemplateResponse(ParsePath("tag" :: Nil, "html", false, false), 200)))
+		
 					case _ if (Post.one(req.uri.replaceFirst("^/", "")) != Empty) =>
-						NotFoundAsResponse(XhtmlTemplateResponse(ParsePath("post" :: Nil, "html", false, false), 200))
-
+						NotFoundAsResponse(cacheResponse(req, XhtmlTemplateResponse(ParsePath("post" :: Nil, "html", false, false), 200)))
+		
 					case _ => NotFoundAsResponse(XhtmlNotFoundResponse())
 				}
 				case _ => NotFoundAsResponse(XhtmlNotFoundResponse())
@@ -173,5 +173,24 @@ class Boot {
 		}
 
 	}
+}
+
+
+object XhtmlTemplateResponse extends HeaderDefaults {
+	def apply(path: ParsePath, statusCode: Int): LiftResponse = {
+		(for {
+			session <- S.session
+			template =  Templates(path.partPath)
+			resp <- session.processTemplate(template, S.request.open_!, path, statusCode)
+		} yield resp) match {
+			case Full(resp) => resp
+			case _ => XhtmlNotFoundResponse()
+		}
+	}
+}
+
+
+object XhtmlNotFoundResponse extends HeaderDefaults {
+	def apply() = XhtmlTemplateResponse(ParsePath("404" :: Nil, "html", false, false), 404)
 }
 
