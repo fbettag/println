@@ -56,7 +56,9 @@
 
 	<h2>Features</h2>
 	<ul>
-		<li>High Performance (thanks to Lift and Scala)</li>
+		<li>High Performance (Liftweb and Scala)</li>
+		<li>Stateless for unauthenticated users</li>
+		<li>LiftActor for Caching Responses (super fast)</li>
 		<li>Easy to use (thanks to me)</li>
 		<li>Easy to write (Live-Preview of your Markdown or Plaintext)</li>
 		<li>Easy to customize (by default only layout or css changes are needed)</li>
@@ -67,6 +69,9 @@
 		<li>Google Sitemap (/sitemap.xml)</li>
 		<li>AJAX-/Facebook-Style Tagging with Tag-cloud</li>
 	</ul>
+
+	<p>Currently, println caches by default every response for an URL for 60 seconds.</p>
+	<strong>This only applies for non-authenticated requests, authenticated users will have uncached Responses.</strong>
 
 
 	<h2>Caveats</h2>
@@ -173,12 +178,6 @@ echo 64M > ram_size (change to appropriate size!)</pre>
 	<p>MongoDB is solely used for statistical analysis like Browser-, Referer- or Target-URL-tracking. This is not fully tested yet, but it has interesting results and more flexibility as opposed to other commercial products.</p>
 
 	<p>If you want to try it without MongoDB, feel free to do so. Just make sure you unset/comment "mo.host" in your .props-files.</p>
-
-
-	<h2>Tracking atom.xml and sitemap.xml</h2>
-	<p>Simply place the following in one or both of the files (not in any of the repeated sections of course):</p>
-
-	<pre><code>&lt;lift:Stats.track/&gt;</code></pre>
 
 
 	<h2>Page title</h2>
