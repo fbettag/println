@@ -165,7 +165,7 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 	
 	object tags extends MappedManyToMany(PostTags, PostTags.post, PostTags.tag, Tag)
 
-	def link = if (User.loggedIn_?) "/admin" else "" + "/%s".format(slug)
+	def link = (if (User.loggedIn_?) "/admin" else "") + "/%s".format(slug)
 
 	def publish(a: Boolean) = {
 		val d = if (!a) null else DateTimeHelpers.getDate.toDate
