@@ -217,7 +217,7 @@ class Posts extends Loggable {
 		def addPost(n: String) = {
 			val p = Post.create.name(n).slug(n)
 			if (p.validate.length == 0 && p.save)
-				RedirectTo("/%s".format(p.slug))
+				RedirectTo("/admin/%s".format(p.slug))
 			else
 				JsFx.failed("#post-name") &
 				JsFx.invalidated("#post-name")
