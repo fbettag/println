@@ -58,35 +58,24 @@ class WebTrack private() extends MongoRecord[WebTrack] with MongoId[WebTrack] {
 	object url extends ObjectIdRefField(this, WebView)
 	object browser extends ObjectIdRefField(this, WebBrowser)
 	object referer extends ObjectIdRefField(this, WebReferer)
-	object session extends ObjectIdRefField(this, WebSession)
 	object timestamp extends DateTimeField(this)
 
 }
 
 object WebTrack extends WebTrack with MongoMetaRecord[WebTrack] {
 
-	def track = {
+	def track(r: Req) = {
 		/* browser tracking */
-		try {
-			val browser = S.request match {
-				case Full(r: Req) => {
-					val browser = WebBrowser.countUp(r.userAgent.openOr("none"))
+		val browser = WebBrowser.countUp(r.userAgent.openOr("none"))
 
-					/* view tracking */
-					val url = WebView.countUp(r.uri)
+		/* view tracking */
+		val url = WebView.countUp(r.uri)
 
-					/* referer tracking ONLY if NOT directly */
-					val referer = S.referer.openOr("direct")
+		/* referer tracking ONLY if NOT directly */
+		val referer = S.referer.openOr("direct")
 
-					val session = WebSession.countUp(S.containerSession.map(_.sessionId).openOr(""))
-				
-					var ref = WebReferer.from(referer)
-					WebTrack.createRecord.timestamp(Calendar.getInstance).browser(browser.id).url(url.id).session(session.id).referer(ref.id).save
-				}
-				case _ =>
-			}
-		} catch { case _ => }
-
+		var ref = WebReferer.from(referer)
+		WebTrack.createRecord.timestamp(Calendar.getInstance).browser(browser.id).url(url.id).referer(ref.id).save
 	}
 	
 	val today = DateTimeHelpers.getDate
@@ -115,55 +104,9 @@ object WebTrack extends WebTrack with MongoMetaRecord[WebTrack] {
 		WebTrack count()
 	} catch { case _ => 0 }
 
-	def currentVisitors = try {
-		WebSession where (_.lastVisit after DateTimeHelpers.getDate.minusMinutes(10)) count()
+	def currentViews = try {
+		WebTrack where (_.timestamp after DateTimeHelpers.getDate.minusMinutes(10)) count()
 	} catch { case _ => 0 }
-
-	def visitorsToday = try {
-		val yesterday = today.minusDays(1)
-		WebSession where (_.lastVisit after yesterday) count()
-	} catch { case _ => 0 }
-
-	def visitorsYesterday = try {
-		val yesterday = today.minusDays(1)
-		val before = today.minusDays(2)
-		WebSession where (_.lastVisit after yesterday) and (_.lastVisit before before) count()
-	} catch { case _ => 0 }
-
-	def visitorsWeek = try {
-		val week = today.minusWeeks(1)
-		WebSession where (_.lastVisit after week) count()
-	} catch { case _ => 0 }
-
-	def visitorsTotal = try {
-		WebSession count()
-	} catch { case _ => 0 }
-	
-}
-
-
-class WebSession private() extends MongoRecord[WebSession] with MongoId[WebSession] {
-	def meta = WebSession
-
-	object name extends StringField(this, 100)
-	object lastVisit extends DateTimeField(this)
-
-}
-
-object WebSession extends WebSession with MongoMetaRecord[WebSession] {
-
-	def countUp(name: String): WebSession = WebSession where (_.name eqs name) fetch(1) match {
-		case l: List[WebSession] if l.length > 0 => {
-			val sess = l.head
-			WebSession where (_._id eqs sess.id) modify (_.lastVisit setTo DateTimeHelpers.getDate) upsertOne()
-			sess
-		}
-		case _ => {
-			val sess = WebSession.createRecord.name(name).lastVisit(Calendar.getInstance)
-			sess.save
-			sess
-		}
-	}
 
 }
 

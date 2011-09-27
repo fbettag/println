@@ -86,8 +86,9 @@ class Boot {
 
 		// Build SiteMap
 		def sitemap = SiteMap(
-			Menu.i("New Post") / "post" >> redirectUnlessAdmin,
+			Menu.i("New Post") / "admin" / "post" >> redirectUnlessAdmin,
 			Menu.i("Posts") / "index",
+			Menu.i("Admin Posts") / "admin" / "index" >> redirectUnlessAdmin >> Hidden,
 			Menu.i("Statistics") / "admin" / "stats" >> redirectUnlessUser >> redirectUnlessMongo,
 			Menu.i("Users") / "admin" / "users" >> redirectUnlessAdmin >> User.AddUserMenusAfter
 		)
@@ -136,7 +137,7 @@ class Boot {
 
 		def cachedResponse_?(req: Req): Box[NotFound] = {
 			if (User.loggedIn_?) return Empty
-			CacheActor !! GetResponse(normalizeURI(req.uri)) match {
+			CacheActor !! GetResponse(req, normalizeURI(req.uri)) match {
 				case Full(rep: CachedReply) =>
 					Full(NotFoundAsResponse(rep.resp))
 				case _ => Empty
@@ -145,32 +146,36 @@ class Boot {
 
 		def cacheResponse(req: Req, res: LiftResponse) = {
 			if (!User.loggedIn_?)
-				CacheActor ! StoreResponse(normalizeURI(req.uri), res)
+				CacheActor ! StoreResponse(req, normalizeURI(req.uri), res)
 			res
 		}
 
 		LiftRules.statelessTest.append {
-			case _ if (!User.loggedIn_?) => true
+			case "users" :: "login" :: Nil => false
+			case "admin" :: _ => false
 		}
 
 		LiftRules.passNotFoundToChain = false 
 		LiftRules.uriNotFound.prepend {
 			case _ => S.request match {
-				case Full(req: Req) => req match {
-					case _ if (cachedResponse_?(req) != Empty) => cachedResponse_?(req).open_!
-					case _ if (req.uri.matches("/atom(\\.xml)?")) =>
-						NotFoundAsResponse(cacheResponse(req, AtomResponse(renderTemplate("atom"))))
-		
-					case _ if (req.uri.matches("/sitemap(\\.xml)?")) =>
-						NotFoundAsResponse(cacheResponse(req, XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8")))
-		
-					case _ if (req.uri.matches("^/tag/.+$") && Tag.findAll(By(Tag.slug, req.uri.replaceFirst("^/tag/", ""))).length != 0) =>
-						NotFoundAsResponse(cacheResponse(req, XhtmlTemplateResponse(ParsePath("tag" :: Nil, "html", false, false), 200)))
-		
-					case _ if (Post.one(req.uri.replaceFirst("^/", "")) != Empty) =>
-						NotFoundAsResponse(cacheResponse(req, XhtmlTemplateResponse(ParsePath("post" :: Nil, "html", false, false), 200)))
-		
-					case _ => NotFoundAsResponse(XhtmlNotFoundResponse())
+				case Full(req: Req) => {
+					val cached = cachedResponse_?(req)
+					req match {
+						case _ if (cached != Empty) => cached.open_!
+						case _ if (req.uri.matches("/atom(\\.xml)?")) =>
+							NotFoundAsResponse(cacheResponse(req, AtomResponse(renderTemplate("atom"))))
+			
+						case _ if (req.uri.matches("/sitemap(\\.xml)?")) =>
+							NotFoundAsResponse(cacheResponse(req, XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8")))
+			
+						case _ if (req.uri.matches("^(/admin)?/tag/.+$") && Tag.findAll(By(Tag.slug, req.uri.replaceFirst("^(/admin)?/tag/", ""))).length != 0) =>
+							NotFoundAsResponse(cacheResponse(req, XhtmlTemplateResponse(ParsePath("tag" :: Nil, "html", false, false), 200)))
+			
+						case _ if (Post.one(req.uri) != Empty) =>
+							NotFoundAsResponse(cacheResponse(req, XhtmlTemplateResponse(ParsePath("post" :: Nil, "html", false, false), 200)))
+			
+						case _ => NotFoundAsResponse(XhtmlNotFoundResponse())
+					}
 				}
 				case _ => NotFoundAsResponse(XhtmlNotFoundResponse())
 			}

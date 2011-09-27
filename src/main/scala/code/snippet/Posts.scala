@@ -60,7 +60,7 @@ import code.model._
 
 class Posts extends Loggable {
 
-	def filterURI(f: String) = f.replaceFirst("^/", "")
+	def filterURI(f: String) = f.replaceFirst("^(/admin)?/", "")
 
 	lazy val post = Post.one(filterURI(if (S.uri.matches("^/ajax_request/")) S.referer.openOr("new-post") else S.uri)).open_!
 	
@@ -70,7 +70,7 @@ class Posts extends Loggable {
 	
 	def saveSlug(p: Post, n: String): JsCmd =
 		if (p.slug(n).validate.length == 0 && p.save)
-			RedirectTo("/%s".format(p.slug))
+			RedirectTo("/admin/%s".format(p.slug))
 		else
 			JsFx.failed(".println_post_slug") &
 			JsFx.invalidated(".println_post_slug")

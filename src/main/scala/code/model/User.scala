@@ -81,7 +81,7 @@ object User extends User with net.liftweb.mapper.MetaMegaProtoUser[User] {
 	override def resetPasswordMenuLoc: Box[Menu] = Empty
 	//override def changePasswordMenuLoc: Box[Menu] = Empty
 
-	object loginReferer extends SessionVar("/")
+	object loginReferer extends SessionVar("/admin/")
 
 	override def homePage = {
 		var ret = loginReferer
@@ -90,7 +90,7 @@ object User extends User with net.liftweb.mapper.MetaMegaProtoUser[User] {
 	}
 
 	override def login = {
-		for (refererPath <- S.referer if loginReferer.is == "/") loginReferer.set(refererPath)
+		for (refererPath <- S.referer if loginReferer.is == "/admin/") loginReferer.set(refererPath)
 		super.login
 	}
 

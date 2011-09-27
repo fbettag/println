@@ -76,28 +76,9 @@ class Stats extends Loggable {
 	/* snippets */
 	def title = <title>{HtmlHelpers.subtitle("Statistics")}</title>
 	
-	def track = {
-		if (PrintlnMongo.enabled_?) {
-			try { WebTrack.track } catch { case _ => }
-		}
-		NodeSeq.Empty	
-	}
-	
 	def graph(xhtml: NodeSeq) = {
 		var maxHeight: Long = 0
 		def setMax(f: Long) = if (f > maxHeight) maxHeight = f
-
-		val visitors = new FlotSerie() {
-			override def label = Full(S.??("Besucher"))
-			override val data: List[(Double,Double)] = 
-				List.range(0, 60*25, 15).map(minute => {
-					val stopTime = DateTimeHelpers.getDate.minusMinutes(minute)
-					val startTime = stopTime.minusMinutes(minute+15)
-					val sessions = WebSession where (_.lastVisit before stopTime) and (_.lastVisit after startTime) count()
-					setMax(sessions)
-					((stopTime.getMillis + DateTimeHelpers.getOffsetMillis).toDouble, sessions.toDouble)
-				}).toList
-		}
 
 		val views = new FlotSerie() {
 			override def label = Full(S.??("Ansichten"))
@@ -126,7 +107,7 @@ class Stats extends Loggable {
 			})
 		}
 
-		Flot.render("visitors_graph_area", List(visitors, views), options, Flot.script(xhtml))
+		Flot.render("visitors_graph_area", List(views), options, Flot.script(xhtml))
 	}
 
 
@@ -136,16 +117,12 @@ class Stats extends Loggable {
 		case _ if (!PrintlnMongo.enabled_?) => "*" #> ""
 		case _ => {
 			listStore = Full(
-				"#visitors_today *" #> WebTrack.visitorsToday &
-				"#visitors_yesterday *" #> WebTrack.visitorsYesterday &
-				"#visitors_week *" #> WebTrack.visitorsWeek &
-				"#visitors_total *" #> WebTrack.visitorsTotal &
 				"#views_today *" #> WebTrack.viewsToday &
 				"#views_yesterday *" #> WebTrack.viewsYesterday &
 				"#views_week *" #> WebTrack.viewsWeek &
 				"#views_total *" #> WebTrack.viewsTotal &
 				"#current_rpm *" #> WebTrack.currentRPM &
-				"#current_visitors *" #> WebTrack.currentVisitors
+				"#current_visitors *" #> WebTrack.currentViews
 			)
 			listStore.open_!
 		}

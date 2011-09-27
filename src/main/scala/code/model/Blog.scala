@@ -110,7 +110,7 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 		override def setFilter = trim _ :: toLower _ :: HtmlHelpers.slugify _ :: super.setFilter
 
 		def preoccupiedSlugs(s: String) = {
-			if (s.matches("^(post/?|stats/?|users(/.*)?|tag(/.*)?)$"))
+			if (s.matches("^(admin/?|post/?|stats/?|users(/.*)?|tag(/.*)?)$"))
 				List(FieldError(this, "You cannot use a pre-defined slug."))
 			else List[FieldError]()		
 		}
@@ -165,7 +165,7 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 	
 	object tags extends MappedManyToMany(PostTags, PostTags.post, PostTags.tag, Tag)
 
-	def link = "/%s".format(slug)
+	def link = if (User.loggedIn_?) "/admin" else "" + "/%s".format(slug)
 
 	def publish(a: Boolean) = {
 		val d = if (!a) null else DateTimeHelpers.getDate.toDate
@@ -240,13 +240,16 @@ object Post extends Post with LongKeyedMetaMapper[Post] {
 		case _ => Post.findAll(By(Post.published, true), By_<(Post.publishDate, new Date), OrderBy(Post.publishDate, Descending))
 	}
 
-	def one(nameOrId: String) = User.currentUser match {
-		case Full(u: User) =>
-			Post.find(By(Post.slug, nameOrId)) match {
-				case Full(p: Post) => Full(p)
-				case _ => Full(Post.create.author(u).slug(nameOrId).name(nameOrId.replaceAll("-", " ").replaceFirst("^\\d{4}/\\d{2}/", "")))
-			}
-		case _ => Post.find(By(Post.slug, nameOrId), By(Post.published, true), By_<(Post.publishDate, new Date))
+	def one(gNameOrId: String) = {
+		val nameOrId = gNameOrId.replaceAll("^(/admin)?/", "")
+		User.currentUser match {
+			case Full(u: User) =>
+				Post.find(By(Post.slug, nameOrId)) match {
+					case Full(p: Post) => Full(p)
+					case _ => Full(Post.create.author(u).slug(nameOrId).name(nameOrId.replaceAll("-", " ").replaceFirst("^\\d{4}/\\d{2}/", "")))
+				}
+			case _ => Post.find(By(Post.slug, nameOrId), By(Post.published, true), By_<(Post.publishDate, new Date))
+		}
 	}
 
 	def lastmod: DateTime = Post.find(OrderBy(Post.updatedAt, Descending)) match {

@@ -37,11 +37,12 @@ import net.liftweb.util.Helpers._
 import org.joda.time._
 import scala.collection.immutable.Map
 
+import code.lib._
 import code.model._
 
 
-case class GetResponse(uri: String)
-case class StoreResponse(uri: String, resp: LiftResponse)
+case class GetResponse(req: Req, uri: String)
+case class StoreResponse(req: Req, uri: String, resp: LiftResponse)
 case class CleanupCache
 
 case class CachedReply(resp: LiftResponse, updated: DateTime)
@@ -54,14 +55,15 @@ object CacheActor extends LiftActor {
 	ActorPing.schedule(this, CleanupCache, 1 minute)
 
 	protected def messageHandler = {
-		case StoreResponse(uri: String, resp: LiftResponse) =>
+		case StoreResponse(req: Req, uri: String, resp: LiftResponse) =>
 			responses = responses ++ Map(uri -> CachedReply(resp, new DateTime))
 
-		case GetResponse(uri: String) =>
+		case GetResponse(req: Req, uri: String) =>
 			responses.get(uri) match {
 				case Some(a: CachedReply) => reply(a)
 				case _ => reply(null)
 			}
+			tryo(WebTrack.track(req))
 
 		case CleanupCache =>
 			val cleanDate = (new DateTime).minusMinutes(1)
