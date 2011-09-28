@@ -53,7 +53,7 @@ import code.snippet._
 
 class Boot {
 	def boot {
-		
+
 		if (!DB.jndiJdbcConnAvailable_?) {
 			val vendor = new StandardDBVendor(
 				Props.get("db.driver") openOr "org.postgresql.Driver",
@@ -69,7 +69,7 @@ class Boot {
 
 		System.setProperty("mail.smtp.host", Props.get("smtp.host") openOr "localhost")
 		System.setProperty("mail.smtp.from", Props.get("smtp.from") openOr "noreply@i.didnt.configure.jack.shit")
-		
+
 		if (PrintlnMongo.enabled_?) {
 			val srvr = new ServerAddress(Props.get("mo.host") openOr "127.0.0.1", Props.get("mo.port").openOr("27017").toInt)
 			val mo = new MongoOptions
@@ -87,7 +87,7 @@ class Boot {
 		// Build SiteMap
 		def sitemap = SiteMap(
 			Menu.i("New Post") / "admin" / "post" >> redirectUnlessAdmin,
-			Menu.i("Posts") / "index",
+			//Menu.i("Posts") / "index",
 			Menu.i("Admin Posts") / "admin" / "index" >> redirectUnlessAdmin >> Hidden,
 			Menu.i("Statistics") / "admin" / "stats" >> redirectUnlessUser >> redirectUnlessMongo,
 			Menu.i("Users") / "admin" / "users" >> redirectUnlessAdmin >> User.AddUserMenusAfter
@@ -97,7 +97,7 @@ class Boot {
 
 		// Charting
 		Flot.init
-		
+
 		// set the sitemap.	Note if you don't want access control for
 		// each page, just comment this line out.
 		LiftRules.setSiteMapFunc(() => sitemapMutators(sitemap))
@@ -108,7 +108,7 @@ class Boot {
 		//Show the spinny image when an Ajax call starts
 		LiftRules.ajaxStart =
 			Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
-		
+
 		// Make the spinny image go away when it ends
 		LiftRules.ajaxEnd =
 			Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
@@ -132,7 +132,7 @@ class Boot {
 
 		def renderTemplate(what: String) =
 			S.render(<lift:embed what={what} />, S.request.get.request).first
-		
+
 		def normalizeURI(a: String) = a.replaceAll("(\\.[xht]+ml)?(\\?.*)?$", "")
 
 		def cachedResponse_?(req: Req): Box[NotFound] = {
@@ -155,25 +155,28 @@ class Boot {
 			case "admin" :: _ => false
 		}
 
-		LiftRules.passNotFoundToChain = false 
+		LiftRules.passNotFoundToChain = false
 		LiftRules.uriNotFound.prepend {
 			case _ => S.request match {
 				case Full(req: Req) => {
 					val cached = cachedResponse_?(req)
 					req match {
 						case _ if (cached != Empty) => cached.open_!
+						case _ if (req.uri.matches("/(index(\\.html?)?)?")) =>
+							NotFoundAsResponse(cacheResponse(req, XhtmlTemplateResponse(ParsePath("index" :: Nil, "html", false, false), 200)))
+
 						case _ if (req.uri.matches("/atom(\\.xml)?")) =>
 							NotFoundAsResponse(cacheResponse(req, AtomResponse(renderTemplate("atom"))))
-			
+
 						case _ if (req.uri.matches("/sitemap(\\.xml)?")) =>
 							NotFoundAsResponse(cacheResponse(req, XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8")))
-			
+
 						case _ if (req.uri.matches("^(/admin)?/tag/.+$") && Tag.findAll(By(Tag.slug, req.uri.replaceFirst("^(/admin)?/tag/", ""))).length != 0) =>
 							NotFoundAsResponse(cacheResponse(req, XhtmlTemplateResponse(ParsePath("tag" :: Nil, "html", false, false), 200)))
-			
+
 						case _ if (Post.one(req.uri) != Empty) =>
 							NotFoundAsResponse(cacheResponse(req, XhtmlTemplateResponse(ParsePath("post" :: Nil, "html", false, false), 200)))
-			
+
 						case _ => NotFoundAsResponse(XhtmlNotFoundResponse())
 					}
 				}
