@@ -5,10 +5,10 @@
 ._*
 
 # sbt
-project/boot
-project/target
-project/plugins/target
-project/plugins/project
+target/
+lib_managed/
+src_managed/
+project/boot/
 
 # OSX
 .DS_Store

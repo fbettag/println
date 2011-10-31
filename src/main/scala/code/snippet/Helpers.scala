@@ -58,11 +58,28 @@ import code.model._
 import code.lib._
 
 
+object SpeedTestAgent {
+	def apply(): Boolean = {
+		try {
+			if (S.request.open_!.userAgent.open_!.matches(".*(GoogleBot|Google Page Speed).*"))
+				return true
+		} catch {
+			case _ => return true
+		}
+		false
+	}
+
+	def hide(xhtml: NodeSeq) = if (apply()) NodeSeq.Empty else xhtml
+	def show(xhtml: NodeSeq) = if (apply()) xhtml else NodeSeq.Empty
+
+}
+
 class Helpers extends Loggable {
 
 	/* snippets */
 	def disqus: NodeSeq = S.attr("name") match {
-		case Full(dn: String) if (dn != "") =>
+		case Full(dn: String) if dn != "" =>
+			if (SpeedTestAgent()) return NodeSeq.Empty
 			<div id="disqus_thread">
 				<script src={"http://%s.disqus.com/embed.js".format(dn)} type="text/javascript"></script>
 				<noscript>
@@ -76,6 +93,7 @@ class Helpers extends Loggable {
 
 	def analytics: NodeSeq = S.attr("ua") match {
 		case Full(ua: String) if (ua != "") =>
+			if (SpeedTestAgent()) return NodeSeq.Empty
 			Script(JsRaw("""
 				var _gaq = _gaq || [];
 				_gaq.push(['_setAccount', '%s']);
@@ -111,6 +129,7 @@ class Helpers extends Loggable {
 	
 	def bitpit: NodeSeq = S.attr("id") match {
 		case Full(id: String) if (id != "") =>
+			if (SpeedTestAgent()) return NodeSeq.Empty
 			<xml:group>
 				<script type="text/javascript" src="http://api.bitp.it/bitp.it.js"></script>
 	      		{Script(JsRaw("bitpit({clientId: '%s', forceUIThread: true});".format(id)))}
@@ -122,6 +141,7 @@ class Helpers extends Loggable {
 	
 	def twitter: NodeSeq = S.attr("user") match {
 		case Full(tu: String) if (tu != "") =>
+			if (SpeedTestAgent()) return NodeSeq.Empty
 			<xml:group>
 				<h3>Twitter</h3>
 	        

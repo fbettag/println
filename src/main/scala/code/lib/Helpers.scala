@@ -45,8 +45,6 @@ import java.util.{Date, Calendar, TimeZone}
 import org.joda.time.{DateTime, DateTimeZone}
 import scala.xml._
 
-import ag.bett.scala.lib.Exec._
-
 import code.model._
 
 

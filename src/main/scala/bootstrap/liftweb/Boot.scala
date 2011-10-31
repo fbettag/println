@@ -136,7 +136,7 @@ class Boot {
 		def normalizeURI(a: String) = a.replaceAll("(\\.[xht]+ml)?(\\?.*)?$", "")
 
 		def cachedResponse_?(req: Req): Box[NotFound] = {
-			if (User.loggedIn_?) return Empty
+			if (User.loggedIn_? || SpeedTestAgent()) return Empty
 			CacheActor !! GetResponse(req, normalizeURI(req.uri)) match {
 				case Full(rep: CachedReply) =>
 					Full(NotFoundAsResponse(rep.resp))
@@ -145,7 +145,7 @@ class Boot {
 		}
 
 		def cacheResponse(req: Req, res: LiftResponse) = {
-			if (!User.loggedIn_?)
+			if (!User.loggedIn_? && !SpeedTestAgent())
 				CacheActor ! StoreResponse(req, normalizeURI(req.uri), res)
 			res
 		}
