@@ -208,20 +208,6 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 			case _ => NodeSeq.Empty
 		}
 
-	// def teaserText = getCached(this.teaserCache)
-	// def contentText = getCached(this.contentCache)
-	// 
-	// private def getCached(a: MappedString[this]): NodeSeq =
-	// 	try {
-	// 		XML.loadString("<span>" + HtmlHelpers.filter(a.is) + "</span>")
-	// 	} catch {
-	// 		case _ if (User.currentUser != Empty) => a match {
-	// 			case _ if (a.is == null || a.is.matches("^(\\s*(\\r|\\n|\\r\\n)\\s*)$")) => <p/>
-	// 			case _ => <p>Malformed body could not be parsed.</p>
-	// 		}
-	// 		case _ => NodeSeq.Empty
-	// 	}
-
 }
 
 object Post extends Post with LongKeyedMetaMapper[Post] {

@@ -8,7 +8,7 @@ scalaVersion := "2.9.1"
  
 seq(webSettings: _*)
 
-port in container.Configuration := 8081
+//port in container.Configuration := 8081
 
 //scalacOptions ++= Seq("-deprecation")
 scalacOptions ++= Seq("-unchecked", "-deprecation")

@@ -113,7 +113,7 @@ class Posts extends Loggable {
 		<xml:group>
 			{Script(JsRaw("""
 				println.tags.add = function(i) { var item = eval('(' + i + ')'); console.log(item); %s; };
-				println.tags.delete = function(i) { var item = eval('(' + i + ')'); console.log(item); %s; };
+				println.tags.remove = function(i) { var item = eval('(' + i + ')'); console.log(item); %s; };
 			 """.format(addHandler, deleteHandler, "")))}
 			<select name="println_post_tags" id="println_post_tags" class="println_post_tags" multiple="multiple">
 				{Tag.findAll(OrderBy(Tag.name, Ascending), OrderBy(Tag.priority, Ascending)).map(tag => {
@@ -138,7 +138,10 @@ class Posts extends Loggable {
 				}
 			}
 
-		val pt = PostTags.create.post(p).tag(tag)
+		val pt = PostTags.find(By(PostTags.post, p), By(PostTags.tag, tag)) match {
+			case Full(pt) => pt
+			case _ => PostTags.create.post(p).tag(tag)
+		}
 		logger.info("--- Post %s (\"%s\") -- Added Tag: %s -- %s".format(p.id.is, p.name.is, t, pt.save))
 		DateTimeHelpers.updateTimestamps(p.reload)
 	}
