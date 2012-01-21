@@ -43,6 +43,7 @@ libraryDependencies ++= {
 libraryDependencies ++= Seq(
   "postgresql" % "postgresql" % "9.1-901-1.jdbc4",
   "com.foursquare" %% "rogue" % "1.1.0" intransitive(),
+//  "org.twitter4j" % "twitter4j-core" % "2.2.5",
   "com.github.scala-incubator.io" %% "scala-io-core" % "0.2.0",
   "com.github.scala-incubator.io" %% "scala-io-file" % "0.2.0"
 )
