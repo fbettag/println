@@ -1,4 +1,4 @@
-/*
+/** {{{
  *  Copyright (c) 2011, Franz Bettag <franz@bett.ag>
  *  All rights reserved.
  *
@@ -25,7 +25,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- */
+ */// }}}
 
 package code.snippet
 
@@ -58,6 +58,7 @@ import code.model._
 import code.lib._
 
 
+/* This will sort out of Stuff which slows pageloading for dynamic reasons (e.g. js). */
 object SpeedTestAgent {
 	def apply(): Boolean = {
 		try {

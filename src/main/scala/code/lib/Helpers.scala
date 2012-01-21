@@ -1,4 +1,4 @@
-/*
+/** {{{
  *  Copyright (c) 2011, Franz Bettag <franz@bett.ag>
  *  All rights reserved.
  *
@@ -25,7 +25,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- */
+ */// }}}
 
 package code.lib
 
@@ -101,7 +101,7 @@ object DateTimeHelpers {
 					if (p.publishDate.is.before(new Date))
 						<xml:group>Published on <time datetime={pubDateISO} pubdate="pubdate">{pubDate}</time></xml:group>
 					else
-						<xml:group>>Will be published on <time datetime={pubDateISO} pubdate="pubdate">{pubDate}</time></xml:group>
+						<xml:group>Will be published on <time datetime={pubDateISO} pubdate="pubdate">{pubDate}</time></xml:group>
 
 				}
 				else <xml:group>This Post is not published yet.</xml:group>
@@ -185,11 +185,8 @@ trait JsEffects[A <: Mapper[A]] {
 		if (this.delete_!) RedirectTo("/") //JsFx.remove(selector)
 		else JsFx.failed(selector)
 
-	private def deleteJs(selector: String): JsCmd = {
-		val handler =  (SHtml.ajaxButton("delete", () => this.delete_!!(selector)) \\ "@onclick").toString.replaceAll("&quot;", "'").replaceAll("return false;+$", "")
-		println("-----------------------\n%s\n%s\n-------------------".format(handler, JsRaw(handler).cmd))
-		JsRaw(handler).cmd
-	}
+	private def deleteJs(selector: String): JsCmd = 
+		SHtml.ajaxInvoke(() => this.delete_!!(selector))._2
 
 	def deleteWithJsFeedback(selector: String, name: String): JsCmd =
 		Confirm("Permanently delete '%s'?".format(name), deleteJs(selector))

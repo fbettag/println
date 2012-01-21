@@ -1,4 +1,4 @@
-/*
+/** {{{
  *  Copyright (c) 2011, Franz Bettag <franz@bett.ag>
  *  All rights reserved.
  *
@@ -25,7 +25,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- */
+ */// }}}
 
 package code.comet
 
@@ -43,7 +43,7 @@ import code.model._
 
 case class GetResponse(req: Req, uri: String)
 case class StoreResponse(req: Req, uri: String, resp: LiftResponse)
-case class CleanupCache
+case object CleanupCache
 
 case class CachedReply(resp: LiftResponse, updated: DateTime)
 
@@ -52,7 +52,7 @@ object CacheActor extends LiftActor {
 
 	var responses: Map[String, CachedReply] = Map()
 
-	ActorPing.schedule(this, CleanupCache, 1 minute)
+	Schedule.schedule(this, CleanupCache, 1 minute)
 
 	protected def messageHandler = {
 		case StoreResponse(req: Req, uri: String, resp: LiftResponse) =>
@@ -69,7 +69,7 @@ object CacheActor extends LiftActor {
 			val cleanDate = (new DateTime).minusMinutes(1)
 			responses = responses.filter(_._2.updated.isAfter(cleanDate))
 
-			ActorPing.schedule(this, CleanupCache, 1 minute)
+			Schedule.schedule(this, CleanupCache, 1 minute)
 
 	}
 

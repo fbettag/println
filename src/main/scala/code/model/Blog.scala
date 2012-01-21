@@ -1,4 +1,4 @@
-/*
+/** {{{
  *  Copyright (c) 2011, Franz Bettag <franz@bett.ag>
  *  All rights reserved.
  *
@@ -25,7 +25,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- */
+ */// }}}
 
 package code.model
 
@@ -70,12 +70,14 @@ class Tag extends LongKeyedMapper[Tag] with IdPK with ManyToMany {
 	
 	def userPosts = {
 		val allposts = posts.all
-		var unpublished = allposts.filter(f => f.publishDate.is == null)
-		var published = allposts.filter(f => f.publishDate.is != null).sort((e1, e2) => (e1.publishDate.is compareTo e2.publishDate.is) > 0)
+		var published = allposts.filter(f => f.publishDate.is != null).sortWith((e1, e2) => (e1.publishDate.is compareTo e2.publishDate.is) > 0)
 
 		User.currentUser match {
-			case Full(u: User) => unpublished ++ published
-			case _ => published
+			case Full(u: User) =>
+				var unpublished = allposts.filter(f => f.publishDate.is == null)
+				unpublished ++ published
+			case _ =>
+				published
 		}
 	}
 	def publicPosts = userPosts.filter(p => ! (p.published && (p.publishDate compareTo new Date) > 0))
@@ -165,24 +167,23 @@ class Post extends LongKeyedMapper[Post] with IdPK with ManyToMany with JsEffect
 	
 	object tags extends MappedManyToMany(PostTags, PostTags.post, PostTags.tag, Tag)
 
-	def link = (if (User.loggedIn_?) "/admin" else "") + "/%s".format(slug)
+	def link = "/%s".format(slug)
 
 	def publish(a: Boolean) = {
-		val d = if (!a) null else DateTimeHelpers.getDate.toDate
-		this.published(a).publishDate(d).save
+		this.published(a).save
 		this
 	}
 
-	def publishAt(d: String): Boolean = {
-		try {
-			val fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm")
-			val dt = fmt.parseDateTime(d)
-			this.published(true).publishDate(dt.toDate).save
-			this.saved_?
-		}
-		catch {
-			case _ => false
-		}
+	def publishAt(d: String): DateTime = try {
+		val fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm")
+		val dt = fmt.parseDateTime(d)
+		this.published(true).publishDate(dt.toDate).save
+		dt
+	} catch {
+		case _ =>
+			val res = DateTimeHelpers.getDate
+			this.published(true).publishDate(res.toDate).save
+			res
 	}
 	
 	def teaserText: NodeSeq =
@@ -241,7 +242,7 @@ object Post extends Post with LongKeyedMetaMapper[Post] {
 	}
 
 	def one(gNameOrId: String) = {
-		val nameOrId = gNameOrId.replaceAll("^(/admin)?/", "")
+		val nameOrId = gNameOrId.replaceAll("^/", "")
 		User.currentUser match {
 			case Full(u: User) =>
 				Post.find(By(Post.slug, nameOrId)) match {
@@ -263,8 +264,8 @@ object Post extends Post with LongKeyedMetaMapper[Post] {
 class PostTags extends LongKeyedMapper[PostTags] with IdPK  {
   def getSingleton = PostTags
 
-  object post extends LongMappedMapper(this, Post)
-  object tag extends LongMappedMapper(this, Tag)
+  object post extends MappedLongForeignKey(this, Post)
+  object tag extends MappedLongForeignKey(this, Tag)
 }
 
 

@@ -1,4 +1,4 @@
-/*
+/** {{{
  *  Copyright (c) 2011, Franz Bettag <franz@bett.ag>
  *  All rights reserved.
  *
@@ -25,7 +25,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- */
+ */// }}}
 
 package bootstrap.liftweb
 
@@ -131,7 +131,7 @@ class Boot {
 
 
 		def renderTemplate(what: String) =
-			S.render(<lift:embed what={what} />, S.request.get.request).first
+			S.render(<lift:embed what={what} />, S.request.get.request).head
 
 		def normalizeURI(a: String) = a.replaceAll("(\\.[xht]+ml)?(\\?.*)?$", "")
 
@@ -152,7 +152,6 @@ class Boot {
 
 		LiftRules.statelessTest.append {
 			case "users" :: "login" :: Nil => false
-			case "admin" :: _ => false
 		}
 
 		LiftRules.passNotFoundToChain = false
@@ -170,9 +169,6 @@ class Boot {
 
 						case _ if (req.uri.matches("/sitemap(\\.xml)?")) =>
 							NotFoundAsResponse(cacheResponse(req, XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8")))
-
-						case _ if (req.uri.matches("^(/admin)?/tag/.+$") && Tag.findAll(By(Tag.slug, req.uri.replaceFirst("^(/admin)?/tag/", ""))).length != 0) =>
-							NotFoundAsResponse(cacheResponse(req, XhtmlTemplateResponse(ParsePath("tag" :: Nil, "html", false, false), 200)))
 
 						case _ if (Post.one(req.uri) != Empty) =>
 							NotFoundAsResponse(cacheResponse(req, XhtmlTemplateResponse(ParsePath("post" :: Nil, "html", false, false), 200)))

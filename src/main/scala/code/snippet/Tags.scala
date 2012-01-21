@@ -1,4 +1,4 @@
-/*
+/** {{{
  *  Copyright (c) 2011, Franz Bettag <franz@bett.ag>
  *  All rights reserved.
  *
@@ -25,7 +25,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- */
+ */// }}}
 
 package code.snippet
 
@@ -109,7 +109,7 @@ class Tags extends Loggable {
 			else if (count > min + distri *2)	cssclass = "largeTag"
 			else if (count > min + distri)		cssclass = "mediumTag"
 
-			<a class={cssclass} href={if (User.loggedIn_?) "/admin" else "" + "/tag/%s".format(t(2))}>{t(1)}</a>
+			<a class={cssclass} href={"/tag/%s".format(t(2))}>{t(1)}</a>
 		})
 	}
 

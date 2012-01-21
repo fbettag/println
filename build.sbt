@@ -1,8 +1,17 @@
 name := "println"
- 
+
+organization := "ag.bett.lift"
+
+version := "0.5"
+
 scalaVersion := "2.9.1"
  
 seq(webSettings: _*)
+
+port in container.Configuration := 8081
+
+//scalacOptions ++= Seq("-deprecation")
+scalacOptions ++= Seq("-unchecked", "-deprecation")
 
 // If using JRebel with 0.1.0 of the sbt web plugin
 //jettyScanDirs := Nil
@@ -11,6 +20,7 @@ scanDirectories in Compile := Nil
 
 resolvers ++= Seq(
   "Repo Maven" at "http://repo1.maven.org/maven2/",
+  "Repo Maven" at "http://repo2.maven.org/maven2/",
   "Scala Tools Snapshot" at "http://scala-tools.org/repo-releases/",
   "Scala Tools Snapshot" at "http://scala-tools.org/repo-snapshots/",
   "Java.net Maven2 Repository" at "http://download.java.net/maven/2/",
@@ -21,7 +31,7 @@ resolvers ++= Seq(
 //checksums := Nil
 
 libraryDependencies ++= {
-  val liftVersion = "2.4-M4"
+  val liftVersion = "2.4"
   Seq(
     "net.liftweb" %% "lift-webkit" % liftVersion % "compile->default",
     "net.liftweb" %% "lift-mapper" % liftVersion % "compile->default",
@@ -31,8 +41,8 @@ libraryDependencies ++= {
 }
 
 libraryDependencies ++= Seq(
-  "org.postgresql" % "postgresql" % "9.1-901.jdbc4",
-  "com.foursquare" %% "rogue" % "1.0.27" intransitive(),
+  "postgresql" % "postgresql" % "9.1-901-1.jdbc4",
+  "com.foursquare" %% "rogue" % "1.1.0" intransitive(),
   "com.github.scala-incubator.io" %% "scala-io-core" % "0.2.0",
   "com.github.scala-incubator.io" %% "scala-io-file" % "0.2.0"
 )

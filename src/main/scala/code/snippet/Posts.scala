@@ -1,4 +1,4 @@
-/*
+/** {{{
  *  Copyright (c) 2011, Franz Bettag <franz@bett.ag>
  *  All rights reserved.
  *
@@ -25,7 +25,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- */
+ */// }}}
 
 package code.snippet
 
@@ -60,7 +60,7 @@ import code.model._
 
 class Posts extends Loggable {
 
-	def filterURI(f: String) = f.replaceFirst("^(/admin)?/", "")
+	def filterURI(f: String) = f.replaceFirst("^/", "")
 
 	lazy val post = Post.one(filterURI(if (S.uri.matches("^/ajax_request/")) S.referer.openOr("new-post") else S.uri)).open_!
 	
@@ -70,20 +70,15 @@ class Posts extends Loggable {
 	
 	def saveSlug(p: Post, n: String): JsCmd =
 		if (p.slug(n).validate.length == 0 && p.save)
-			RedirectTo("/admin/%s".format(p.slug))
+			RedirectTo("/%s".format(p.slug))
 		else
 			JsFx.failed(".println_post_slug") &
 			JsFx.invalidated(".println_post_slug")
 	//		JsRaw("$('.println_post_slug').val('%s')".format(p.reload.slug)).cmd
 
 	def savePublishDate(p: Post, a: String): JsCmd =
-		if (p.publishAt(a))
-			JsFx.validated(".println_post_publish_date") &
-			DateTimeHelpers.updateTimestamps(p.reload) &
-			JsRaw("$('.println_post_slug').attr('disabled', 'disabled')")
-		else
-			JsFx.failed(".println_post_publish_date") &
-			JsFx.invalidated(".println_post_publish_date")
+		DateTimeHelpers.updateTimestamps(p.reload) &
+		JsRaw("""$('.println_post_publish_date').val('%s')""".format(p.publishAt(a).toString("yyyy-MM-dd HH:mm")))
 
 	def setSlugEditing(enabled: Boolean): JsCmd =
 		if (enabled)
@@ -110,8 +105,10 @@ class Posts extends Loggable {
 			JsFx.invalidated(".println_post_publish_now")
 
 	def tags(p: Post): NodeSeq = {
-		val addHandler = (SHtml.ajaxText("", addTag(p, _)) \\ "@onblur").toString.replaceAll("this.value", "item._value")
-		val deleteHandler = (SHtml.ajaxText("", deleteTag(p, _)) \\ "@onblur").toString.replaceAll("this.value", "item._value")
+		val addHandler = ajaxCall(JsRaw("item._value"), addTag(p, _))._2.toJsCmd
+		val deleteHandler = ajaxCall(JsRaw("item._value"), deleteTag(p, _))._2.toJsCmd
+		//val addHandler = (SHtml.ajaxText("", addTag(p, _)) \\ "@onblur").toString.replaceAll("this.value", "item._value")
+		//val deleteHandler = (SHtml.ajaxText("", deleteTag(p, _)) \\ "@onblur").toString.replaceAll("this.value", "item._value")
 
 		<xml:group>
 			{Script(JsRaw("""
@@ -142,7 +139,7 @@ class Posts extends Loggable {
 			}
 
 		val pt = PostTags.create.post(p).tag(tag)
-		println("--- Post %s (\"%s\") -- Added Tag: %s -- %s".format(p.id, p.name, t.name, pt.save))
+		logger.info("--- Post %s (\"%s\") -- Added Tag: %s -- %s".format(p.id.is, p.name.is, t, pt.save))
 		DateTimeHelpers.updateTimestamps(p.reload)
 	}
 
@@ -163,7 +160,7 @@ class Posts extends Loggable {
 		}}
 	
 		val pt = PostTags.findAll(By(PostTags.post, p), By(PostTags.tag, tag))
-		println("--- Post %s (\"%s\") -- Deleted Tag: %s -- %s".format(p.id, p.name, t.name, pt.map(pte => {PostTags.delete_!(pte)})))
+		logger.info("--- Post %s (\"%s\") -- Deleted Tag: %s -- %s".format(p.id.is, p.name.is, t, pt.map(PostTags.delete_!)))
 		DateTimeHelpers.updateTimestamps(p.reload)
 	}
 
@@ -195,8 +192,6 @@ class Posts extends Loggable {
 			h.toString.replaceAll("this.value", "\\$('#println-admin-txtt-cached').val()")
 		}
 
-		println("path: %s".format(Props.get("upload.path")))
-
 		".println_post_name" #>					SHtml.ajaxText(post.name, saveName(post, _)) &
 		".println_post_tags" #>					<xml:group>{tags(post)}</xml:group> &
 		".println_post_teaser_link" #>			SHtml.ajaxText(post.teaserLink, post.teaserLink(_).saveWithJsFeedback(".println_post_teaser_link input")) &
@@ -217,18 +212,16 @@ class Posts extends Loggable {
 		def addPost(n: String) = {
 			val p = Post.create.name(n).slug(n)
 			if (p.validate.length == 0 && p.save)
-				RedirectTo("/admin/%s".format(p.slug))
+				RedirectTo("/%s".format(p.slug))
 			else
 				JsFx.failed("#post-name") &
 				JsFx.invalidated("#post-name")
 		}
-		
-		val addHandler = (SHtml.ajaxText("a", addPost(_)) \\ "@onblur").toString.replaceAll("this.value", "post")
-		
 
+		val addHandler = ajaxCall(JsRaw("""$('#new-post-input').val()"""), addPost)._2.toJsCmd
 		<div id="new-post" title="New Blog Post">
-			{Script(JsRaw("println.post.add=function(){var post=$('#new-post-input').val();console.log(\"New Post: \"+post);%s;};".format(addHandler)))}
-			<form onsubmit="javascript:println.post.add(); return false;">
+			{Script(JsRaw("println.post.add=function(){ var post=$('#new-post-input').val(); %s; }".format(addHandler)))}
+			<form onsubmit="javascript:println.post.add(); return false">
 			<fieldset>
 				<label for="name">Name</label>
 				<input type="text" name="new-post-name" id="new-post-input" class="text ui-widget-content ui-corner-all" />
