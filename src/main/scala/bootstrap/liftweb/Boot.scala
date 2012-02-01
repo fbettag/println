@@ -167,6 +167,9 @@ class Boot {
 						case _ if (req.uri.matches("/atom(\\.xml)?")) =>
 							NotFoundAsResponse(cacheResponse(req, AtomResponse(renderTemplate("atom"))))
 
+						case _ if (req.uri.matches("^/tag/.+$") && Tag.findAll(By(Tag.slug, req.uri.replaceFirst("^/tag/", ""))).length != 0) =>
+							NotFoundAsResponse(cacheResponse(req, XhtmlTemplateResponse(ParsePath("tag" :: Nil, "html", false, false), 200)))
+
 						case _ if (req.uri.matches("/sitemap(\\.xml)?")) =>
 							NotFoundAsResponse(cacheResponse(req, XmlResponse(renderTemplate("sitemap"), 200, "application/xml; charset=utf-8")))
 

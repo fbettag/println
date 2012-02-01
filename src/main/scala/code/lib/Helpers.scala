@@ -97,7 +97,7 @@ object DateTimeHelpers {
 			}}
 
 			{if (p.showDate) {
-				if (p.published.is) {
+				if (p.published.is && p.publishDate.is != null) {
 					if (p.publishDate.is.before(new Date))
 						<xml:group>Published on <time datetime={pubDateISO} pubdate="pubdate">{pubDate}</time></xml:group>
 					else

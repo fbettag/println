@@ -76,9 +76,11 @@ class Posts extends Loggable {
 			JsFx.invalidated(".println_post_slug")
 	//		JsRaw("$('.println_post_slug').val('%s')".format(p.reload.slug)).cmd
 
-	def savePublishDate(p: Post, a: String): JsCmd =
+	def savePublishDate(p: Post, a: String): JsCmd = {
+		p.publishAt(a)
 		DateTimeHelpers.updateTimestamps(p.reload) &
 		JsRaw("""$('.println_post_publish_date').val('%s')""".format(p.publishAt(a).toString("yyyy-MM-dd HH:mm")))
+	}
 
 	def setSlugEditing(enabled: Boolean): JsCmd =
 		if (enabled)
